@@ -184,8 +184,8 @@ const handleAction = async () => {
   const refValue = parceiroRef.value;
   await registrarLead(refValue);
 
-  const mensagem = encodeURIComponent(`Olá, vim pelo QR ${refValue}. Gostaria de saber mais sobre os planos com 40% de economia.`);
-  const whatsappLink = `https://wa.me/5561984974689?text=${mensagem}`;
+  const mensagem = encodeURIComponent(`Olá, gostaria de saber mais sobre os planos de saúde. Vim pelo QR Code ${refValue}.`);
+  const whatsappLink = `https://wa.me/5561986450951?text=${mensagem}`;
   window.location.href = whatsappLink;
 };
 </script>
