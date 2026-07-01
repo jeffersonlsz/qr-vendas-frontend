@@ -274,43 +274,70 @@ defineEmits(['generate', 'download', 'poster', 'view-leads'])
   text-align: center;
 }
 
-/* Dark mode basic support */
-@media (prefers-color-scheme: dark) {
-  .partner-card {
-    background: #1f2937;
-    border-color: #374151;
-  }
-  .card-header, .card-footer {
-    border-color: #374151;
-  }
-  .card-footer {
-    background: #111827;
-  }
-  .name {
-    color: #f9fafb;
-  }
-  .badge {
-    background: #374151;
-    color: #e5e7eb;
-  }
-  .contact-info {
-    color: #9ca3af;
-  }
-  .btn-outline {
-    background: transparent;
-    color: #e5e7eb;
-    border-color: #4b5563;
-  }
-  .btn-outline:hover {
-    background: #374151;
-    border-color: #6b7280;
-  }
-  .btn-text {
-    color: #9ca3af;
-  }
-  .btn-text:hover {
-    background: #374151;
-    color: #f9fafb;
-  }
+/* Manual Dark Mode Theme */
+:deep(.theme-dark) .partner-card,
+.theme-dark .partner-card {
+  background: #1f2937;
+  border-color: #374151;
+}
+:deep(.theme-dark) .card-header,
+:deep(.theme-dark) .card-footer,
+.theme-dark .card-header,
+.theme-dark .card-footer {
+  border-color: #374151;
+}
+:deep(.theme-dark) .card-footer,
+.theme-dark .card-footer {
+  background: #111827;
+}
+:deep(.theme-dark) .name,
+.theme-dark .name {
+  color: #f9fafb;
+}
+:deep(.theme-dark) .badge,
+.theme-dark .badge {
+  background: #374151;
+  color: #e5e7eb;
+}
+:deep(.theme-dark) .contact-info,
+.theme-dark .contact-info {
+  color: #9ca3af;
+}
+:deep(.theme-dark) .btn-outline,
+.theme-dark .btn-outline {
+  background: transparent;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+:deep(.theme-dark) .btn-outline:hover,
+.theme-dark .btn-outline:hover {
+  background: #374151;
+  border-color: #6b7280;
+}
+:deep(.theme-dark) .btn-text,
+.theme-dark .btn-text {
+  color: #9ca3af;
+}
+:deep(.theme-dark) .btn-text:hover,
+.theme-dark .btn-text:hover {
+  background: #374151;
+  color: #f9fafb;
+}
+:deep(.theme-dark) .stat-value,
+.theme-dark .stat-value {
+  color: #f9fafb;
+}
+:deep(.theme-dark) .stat-label,
+.theme-dark .stat-label {
+  color: #9ca3af;
+}
+:deep(.theme-dark) .btn-secondary,
+.theme-dark .btn-secondary {
+  background: #374151;
+  color: #f9fafb;
+}
+:deep(.theme-dark) .btn-secondary:hover,
+.theme-dark .btn-secondary:hover {
+  background: #4b5563;
 }
 </style>

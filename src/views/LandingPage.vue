@@ -32,6 +32,13 @@
       <div class="card-body">
         <!-- Único Botão CTA Principal -->
         <div class="cta-wrapper fade-in-delay-4">
+          <button @click="isModalOpen = true" class="cta-button quote-btn" aria-label="Faça sua cotação">
+            <span class="btn-text">Faça sua cotação</span>
+            <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+            </svg>
+          </button>
+
           <button @click="handleAction" class="cta-button pulse" :disabled="isLoading" aria-label="Falar com Especialista pelo WhatsApp">
             <span class="btn-text">{{ isLoading ? 'Redirecionando...' : 'Falar com Especialista' }}</span>
             <svg v-if="!isLoading" class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24"
@@ -41,6 +48,9 @@
             </svg>
           </button>
         </div>
+
+    <SimulationModal :isOpen="isModalOpen" @close="isModalOpen = false" />
+
 
         <!-- Lista de Benefícios Atualizada -->
         <ul class="benefits-list fade-in-delay-5">
@@ -66,7 +76,7 @@
                 <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
               </svg>
             </div>
-            <span class="benefit-text">Sem carência em alguns planos</span>
+            <span class="benefit-text">Sem carência sob condições específicas</span>
           </li>
         </ul>
 
@@ -113,6 +123,9 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
+import SimulationModal from '../components/SimulationModal.vue'
+
+const isModalOpen = ref(false)
 
 const parceiroRef = ref("SEM_REF")
 const isLoading = ref(false)
@@ -350,6 +363,17 @@ const handleAction = async () => {
 .cta-button:hover:not(:disabled) {
   transform: scale(1.02);
   background: #22c35e !important;
+}
+
+.quote-btn {
+  background: linear-gradient(135deg, #00D1FF 0%, #007BFF 100%) !important;
+  color: white !important;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+}
+
+.quote-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #00E0FF 0%, #008BFF 100%) !important;
 }
 
 .cta-button.pulse {
