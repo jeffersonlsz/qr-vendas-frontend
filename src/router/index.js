@@ -19,9 +19,9 @@ const router = createRouter({
             redirect: '/lp'
         },
         {
-            path: '/leads',
-            name: 'dashboard-leads',
-            component: () => import('../views/LeadsDashboard.vue')
+            path: '/solicitacoes',
+            name: 'dashboard-solicitacoes',
+            component: () => import('../views/SolicitacoesDashboard.vue')
         }
     ]
 })

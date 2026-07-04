@@ -1,3 +1,35 @@
+<script setup>
+import { onMounted, ref } from 'vue'
+import SolicitacaoModal from '../components/SolicitacaoModal.vue'
+import SuccessModal from '../components/SuccessModal.vue'
+
+const isSolicitacaoModalOpen = ref(false)
+const isSuccessModalOpen = ref(false)
+const protocolo = ref('')
+const parceiroRef = ref("SEM_REF")
+
+onMounted(() => {
+  const urlParams = new URLSearchParams(window.location.search)
+  const refParam = urlParams.get("ref")
+
+  if (refParam) {
+    localStorage.setItem("ref_parceiro", refParam)
+    parceiroRef.value = refParam
+  } else {
+    const storedRef = localStorage.getItem("ref_parceiro")
+    if (storedRef) {
+      parceiroRef.value = storedRef
+    }
+  }
+})
+
+const handleSolicitationSuccess = (p) => {
+  isSolicitacaoModalOpen.value = false;
+  protocolo.value = p;
+  isSuccessModalOpen.value = true;
+}
+</script>
+
 <template>
   <div class="landing-container">
     <!-- Efeitos de Fundo (Blobs) -->
@@ -19,7 +51,7 @@
 
           <!-- Headline Principal -->
           <h1 class="headline fade-in-delay-2">
-            Economize até <span class="highlight">40%</span> no seu plano de saúde.*
+            O plano de saúde ideal para seu perfil e suas necessidades.
           </h1>
 
           <!-- Subtítulo de Segmentação -->
@@ -32,25 +64,25 @@
       <div class="card-body">
         <!-- Único Botão CTA Principal -->
         <div class="cta-wrapper fade-in-delay-4">
-          <button @click="isModalOpen = true" class="cta-button quote-btn" aria-label="Faça sua cotação">
-            <span class="btn-text">Faça sua cotação</span>
+          <button @click="isSolicitacaoModalOpen = true" class="cta-button quote-btn" aria-label="Faça sua solicitação">
+            <span class="btn-text">Faça sua solicitação</span>
             <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
             </svg>
           </button>
-
-          <button @click="handleAction" class="cta-button pulse" :disabled="isLoading" aria-label="Falar com Especialista pelo WhatsApp">
-            <span class="btn-text">{{ isLoading ? 'Redirecionando...' : 'Falar com Especialista' }}</span>
-            <svg v-if="!isLoading" class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24"
-              height="24" fill="currentColor">
-              <path
-                d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.05 20.15C10.55 20.15 9.11 19.75 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.96 3.8 13.47 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.05 20.15ZM16.58 13.91C16.33 13.79 15.11 13.18 14.88 13.1C14.66 13.02 14.5 12.98 14.33 13.23C14.16 13.48 13.69 14.05 13.54 14.21C13.4 14.38 13.25 14.4 13 14.28C12.75 14.15 11.96 13.89 11.02 13.05C10.29 12.39 9.8 11.58 9.65 11.33C9.5 11.08 9.63 10.95 9.76 10.82C9.87 10.71 10.01 10.53 10.13 10.39C10.26 10.24 10.3 10.14 10.43 9.94C10.55 9.74 10.49 9.57 10.43 9.45C10.36 9.32 9.87 8.12 9.66 7.64C9.46 7.18 9.25 7.24 9.11 7.24C8.98 7.24 8.81 7.24 8.64 7.24C8.48 7.24 8.21 7.3 7.98 7.55C7.75 7.8 7.11 8.39 7.11 9.59C7.11 10.79 8.01 11.95 8.14 12.12C8.28 12.28 9.84 14.68 12.21 15.71C12.78 15.95 13.22 16.1 13.56 16.21C14.13 16.39 14.65 16.36 15.06 16.29C15.52 16.21 16.51 15.68 16.71 15.09C16.92 14.5 16.92 14.01 16.86 13.91C16.79 13.81 16.62 13.74 16.58 13.91Z" />
-            </svg>
-          </button>
         </div>
 
-    <SimulationModal :isOpen="isModalOpen" @close="isModalOpen = false" />
+        <SolicitacaoModal 
+          :isOpen="isSolicitacaoModalOpen" 
+          @close="isSolicitacaoModalOpen = false"
+          @solicitation-success="handleSolicitationSuccess"
+        />
 
+        <SuccessModal 
+          :isOpen="isSuccessModalOpen"
+          :protocol="protocolo"
+          @close="isSuccessModalOpen = false"
+        />
 
         <!-- Lista de Benefícios Atualizada -->
         <ul class="benefits-list fade-in-delay-5">
@@ -68,7 +100,7 @@
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
               </svg>
             </div>
-            <span class="benefit-text">Atendimento imediato pelo WhatsApp</span>
+            <span class="benefit-text">As melhores operadoras do mercado</span>
           </li>
           <li>
             <div class="icon-wrapper">
@@ -120,88 +152,6 @@
     </main>
   </div>
 </template>
-
-<script setup>
-import { onMounted, ref } from 'vue'
-import SimulationModal from '../components/SimulationModal.vue'
-
-const isModalOpen = ref(false)
-
-const parceiroRef = ref("SEM_REF")
-const isLoading = ref(false)
-
-onMounted(() => {
-  const urlParams = new URLSearchParams(window.location.search)
-  const refParam = urlParams.get("ref")
-
-  if (refParam) {
-    localStorage.setItem("ref_parceiro", refParam)
-    parceiroRef.value = refParam
-  } else {
-    const storedRef = localStorage.getItem("ref_parceiro")
-    if (storedRef) {
-      parceiroRef.value = storedRef
-    }
-  }
-})
-
-const getSessionId = () => {
-  let sessionId = sessionStorage.getItem('lead_session_id');
-  if (!sessionId) {
-    sessionId = typeof crypto !== 'undefined' && crypto.randomUUID
-      ? crypto.randomUUID()
-      : Date.now().toString(36) + Math.random().toString(36).substring(2);
-    sessionStorage.setItem('lead_session_id', sessionId);
-  }
-  return sessionId;
-};
-
-const registrarLead = async (parceiroId) => {
-  if (!parceiroId || parceiroId === "SEM_REF") return;
-
-  const sessionId = getSessionId();
-  const dedupKey = `lead_${parceiroId}_${sessionId}`;
-
-  if (localStorage.getItem(dedupKey)) return;
-
-  const baseUrl = import.meta.env.VITE_API_URL;
-  const endpoint = `${baseUrl}/api/v1/leads`;
-
-  const payload = {
-    parceiro_id: parceiroId,
-    nome: `Lead QR ${parceiroId}`,
-    telefone: "0000000000",
-    origem: "qr_code",
-    observacoes: "Lead gerado via clique no WhatsApp"
-  };
-
-  try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    if (response.ok) {
-      localStorage.setItem(dedupKey, "true");
-    }
-  } catch (error) {
-    console.error("Erro ao registrar lead:", error);
-  }
-};
-
-const handleAction = async () => {
-  if (isLoading.value) return;
-  isLoading.value = true;
-
-  const refValue = parceiroRef.value;
-  await registrarLead(refValue);
-
-  const mensagem = encodeURIComponent(`Olá, gostaria de saber mais sobre os planos de saúde. Vim pelo QR Code ${refValue}.`);
-  const whatsappLink = `https://wa.me/5561986450951?text=${mensagem}`;
-  window.location.href = whatsappLink;
-};
-</script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');

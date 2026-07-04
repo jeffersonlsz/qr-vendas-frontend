@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import QRCode from 'qrcode'
 import PartnerCard from '../components/PartnerCard.vue'
+import { parceiroService } from '@/services/parceiroService'
 
 // Estado
 const partners = ref([])
@@ -19,10 +20,10 @@ const toggleTheme = () => {
 
 const modalQrOpen = ref(false)
 const modalPosterOpen = ref(false)
-const modalLeadsOpen = ref(false)
 const modalAddPartnerOpen = ref(false)
-const selectedPartnerLeads = ref([])
+const modalSolicitacoesOpen = ref(false)
 const selectedPartner = ref(null)
+const selectedPartnerSolicitacoes = ref([])
 const qrDataUrl = ref('')
 const qrUrlText = ref('')
 
@@ -39,26 +40,25 @@ const isSavingPartner = ref(false)
 // Usa variável de ambiente para permitir acesso via rede (QR Code) e produção
 // Definir VITE_PUBLIC_URL no .env para acesso via IP local (ex: http://192.168.0.10:5173)
 const BASE_URL = import.meta.env.VITE_PUBLIC_URL || window.location.origin
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
 
 // KPIs Computados do Sistema
 const kpiGerais = computed(() => {
   const totalParceiros = partners.value.length;
-  let leads = 0;
+  let solicitacoes = 0;
   let convertidos = 0;
 
   partners.value.forEach(p => {
     if (p.stats) {
-      leads += parseInt(p.stats.total_leads) || 0;
+      solicitacoes += parseInt(p.stats.total_solicitacoes) || 0;
       convertidos += parseInt(p.stats.total_convertidos) || 0;
     }
   });
 
-  const taxaGeral = leads > 0 ? ((convertidos / leads) * 100).toFixed(1) + '%' : '0%';
+  const taxaGeral = solicitacoes > 0 ? ((convertidos / solicitacoes) * 100).toFixed(1) + '%' : '0%';
 
   return {
     totalParceiros,
-    totalLeads: leads,
+    totalSolicitacoes: solicitacoes,
     totalConvertidos: convertidos,
     taxaGeral
   };
@@ -67,11 +67,7 @@ const kpiGerais = computed(() => {
 // Métodos
 const fetchPartnerSummary = async (partner) => {
   try {
-    const summaryRes = await fetch(`${API_URL}/api/v1/parceiros/${partner.id}/resumo`)
-    if (!summaryRes.ok) throw new Error('Resumo não encontrado')
-    const summaryText = await summaryRes.text()
-    if (!summaryText) throw new Error('Resumo vazio')
-    const summary = JSON.parse(summaryText)
+    const summary = await parceiroService.buscarResumo(partner.id)
     
     // Suportar retornos com wrapper { data: {...}} ou response plana
     const data = summary.data || summary
@@ -79,13 +75,12 @@ const fetchPartnerSummary = async (partner) => {
     const vendas = data.total_vendas || 0
     
     partner.stats = {
-      total_leads: leads,
-      total_convertidos: vendas,
-      taxa_conversao: leads > 0 ? ((vendas / leads) * 100).toFixed(1) + '%' : '0%'
+      total_solicitacoes: leads,
+      total_convertidos: vendas
     }
   } catch (err) {
     // Valores de fallback se o backend estiver incompleto p/ esse parceiro
-    partner.stats = { total_leads: 0, total_convertidos: 0, taxa_conversao: '0%' }
+    partner.stats = { total_solicitacoes: 0, total_convertidos: 0 }
   }
 }
 
@@ -103,8 +98,7 @@ const fetchPartners = async () => {
   }, 1000)
 
   try {
-    const response = await fetch(`${API_URL}/api/v1/parceiros?page=1&page_size=20`)
-    const json = await response.json()
+    const json = await parceiroService.listar()
 
     if (json.success) {
       partners.value = json.data
@@ -127,18 +121,18 @@ const fetchPartners = async () => {
   }
 }
 
-const handleViewLeads = async (partner) => {
+const handleViewSolicitacoes = async (partner) => {
   selectedPartner.value = partner
   try {
-    const response = await fetch(`${API_URL}/api/v1/leads?parceiro_id=${partner.id}`)
-    const json = await response.json()
-    // Aceita padronização global com json.data ou Array nativo
-    selectedPartnerLeads.value = json.data || (Array.isArray(json) ? json : [])
-    modalLeadsOpen.value = true
+    const json = await parceiroService.buscarSolicitacoes(partner.id)
+    
+    selectedPartnerSolicitacoes.value = json.solicitacoes || []
+    modalSolicitacoesOpen.value = true
   } catch (error) {
-    console.error('Erro ao buscar leads', error)
+    console.error('Erro ao buscar solicitações', error)
   }
 }
+
 
 onMounted(() => {
   fetchPartners()
@@ -396,22 +390,10 @@ const savePartner = async () => {
 
   isSavingPartner.value = true
   try {
-    const response = await fetch(`${API_URL}/api/v1/parceiros`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(newPartner.value)
-    })
-
-    const json = await response.json()
-    if (json.success || response.ok) {
-      alert('Parceiro adicionado com sucesso!')
-      modalAddPartnerOpen.value = false
-      fetchPartners() // Recarrega a lista
-    } else {
-      throw new Error(json.message || 'Erro ao salvar parceiro')
-    }
+    await parceiroService.criar(newPartner.value)
+    alert('Parceiro adicionado com sucesso!')
+    modalAddPartnerOpen.value = false
+    fetchPartners() // Recarrega a lista
   } catch (error) {
     console.error('Erro ao salvar parceiro:', error)
     alert('Ocorreu um erro ao salvar o parceiro. Verifique o console.')
@@ -423,13 +405,13 @@ const savePartner = async () => {
 const closeModal = () => {
   modalQrOpen.value = false
   modalPosterOpen.value = false
-  modalLeadsOpen.value = false
   modalAddPartnerOpen.value = false
+  modalSolicitacoesOpen.value = false
   setTimeout(() => {
     selectedPartner.value = null
     qrDataUrl.value = ''
     qrUrlText.value = ''
-    selectedPartnerLeads.value = []
+    selectedPartnerSolicitacoes.value = []
   }, 300)
 }
 </script>
@@ -449,9 +431,9 @@ const closeModal = () => {
         </div>
         
         <div class="header-actions">
-          <router-link to="/leads" class="action-btn">
+          <router-link to="/solicitacoes" class="action-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            Ver leads
+            Ver solicitações
           </router-link>
           
           <button class="action-btn btn-success-light" @click="handleAddPartner">
@@ -476,8 +458,8 @@ const closeModal = () => {
           <span class="kpi-value">{{ kpiGerais.totalParceiros }}</span>
         </div>
         <div class="kpi-card">
-          <span class="kpi-label">Total Leads</span>
-          <span class="kpi-value">{{ kpiGerais.totalLeads }}</span>
+          <span class="kpi-label">Total de Solicitações</span>
+          <span class="kpi-value">{{ kpiGerais.totalSolicitacoes }}</span>
         </div>
         <div class="kpi-card highlight-kpi">
           <span class="kpi-label">Convertidos</span>
@@ -503,7 +485,7 @@ const closeModal = () => {
           @generate="handleGenerateQr"
           @download="handleDownloadQr"
           @poster="handleGeneratePoster"
-          @view-leads="handleViewLeads"
+          @view-solicitacoes="handleViewSolicitacoes"
         />
       </div>
     </main>
@@ -674,10 +656,10 @@ const closeModal = () => {
       </Transition>
     </Teleport>
 
-    <!-- Modal Leads -->
+    <!-- Modal Solicitações -->
     <Teleport to="body">
       <Transition name="fade">
-        <div v-if="modalLeadsOpen" class="modal-overlay" @click.self="closeModal">
+        <div v-if="modalSolicitacoesOpen" class="modal-overlay" @click.self="closeModal">
           <div class="modal-content modal-lg">
             <div class="modal-header">
               <h2>Performance: {{ selectedPartner?.nome }}</h2>
@@ -685,31 +667,33 @@ const closeModal = () => {
             </div>
             
             <div class="modal-body bg-gray list-body" style="max-height: 60vh; overflow-y: auto;">
-              <table class="leads-table">
+              <table class="solicitacoes-table">
                 <thead>
                   <tr>
                     <th>Data</th>
-                    <th>Nome / Telefone</th>
+                    <th>Detalhes da Solicitação</th>
                     <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="lead in selectedPartnerLeads" :key="lead.id">
+                  <tr v-for="solicitacao in selectedPartnerSolicitacoes" :key="solicitacao.id">
                     <td>
-                      {{ lead.created_at ? new Date(lead.created_at).toLocaleDateString('pt-BR') : 'N/A' }}
+                      {{ solicitacao.created_at ? new Date(solicitacao.created_at).toLocaleDateString('pt-BR') : 'N/A' }}
                     </td>
                     <td>
-                      <div><strong>{{ lead.nome || 'Lead QR Code' }}</strong></div>
-                      <div class="text-sm text-gray-500">{{ lead.telefone || 'N/A' }}</div>
+                      <div><strong>Protocolo:</strong> {{ solicitacao.protocolo }}</div>
+                      <div class="text-sm text-gray-500">
+                        {{ solicitacao.vidas.length }} vida(s) | Cobertura: {{ solicitacao.cobertura }}
+                      </div>
                     </td>
                     <td>
-                      <span :class="['status-badge', lead.status]">
-                        {{ lead.status === 'em_atendimento' ? 'em andamento' : (lead.status || 'novo') }}
+                      <span :class="['status-badge', solicitacao.status || 'novo']">
+                        {{ solicitacao.status === 'em_atendimento' ? 'em andamento' : (solicitacao.status || 'novo') }}
                       </span>
                     </td>
                   </tr>
-                  <tr v-if="selectedPartnerLeads.length === 0">
-                    <td colspan="3" class="text-center">Nenhum lead encontrado para este parceiro.</td>
+                  <tr v-if="selectedPartnerSolicitacoes.length === 0">
+                    <td colspan="3" class="text-center">Nenhuma solicitação encontrada para este parceiro.</td>
                   </tr>
                 </tbody>
               </table>
@@ -1506,14 +1490,14 @@ const closeModal = () => {
 .theme-dark .kpi-value {
   color: #f9fafb;
 }
-.theme-dark .leads-table {
+.theme-dark .solicitacoes-table {
   background: #1f2937;
 }
-.theme-dark .leads-table th {
+.theme-dark .solicitacoes-table th {
   background: #111827;
   color: #9ca3af;
 }
-.theme-dark .leads-table td {
+.theme-dark .solicitacoes-table td {
   border-color: #374151;
   color: #e5e7eb;
 }
@@ -1597,21 +1581,24 @@ const closeModal = () => {
 .list-body {
   padding: 0;
 }
-.leads-table {
+.solicitacoes-table {
   width: 100%;
   border-collapse: collapse;
   background: #ffffff;
 }
-.leads-table th, .leads-table td {
+.solicitacoes-table th, .solicitacoes-table td {
   padding: 16px;
   text-align: left;
   border-bottom: 1px solid #f3f4f6;
   font-size: 0.9rem;
 }
-.leads-table th {
+.solicitacoes-table td {
+  color: #111827;
+}
+.solicitacoes-table th {
   background-color: #f9fafb;
   font-weight: 600;
-  color: #4b5563;
+  color: #111827;
   text-transform: uppercase;
   font-size: 0.75rem;
   position: sticky;

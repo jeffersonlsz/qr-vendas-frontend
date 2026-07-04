@@ -6,7 +6,7 @@ defineProps({
   }
 })
 
-defineEmits(['generate', 'download', 'poster', 'view-leads'])
+defineEmits(['generate', 'download', 'poster', 'view-solicitacoes'])
 </script>
 
 <template>
@@ -30,16 +30,12 @@ defineEmits(['generate', 'download', 'poster', 'view-leads'])
       <!-- Métricas de Desempenho (Mini Dashboard) -->
       <div class="partner-stats" v-if="partner.stats">
         <div class="stat-item">
-          <span class="stat-value">{{ partner.stats.total_leads || 0 }}</span>
-          <span class="stat-label">Leads</span>
+          <span class="stat-value">{{ partner.stats.total_solicitacoes || 0 }}</span>
+          <span class="stat-label">Solic.</span>
         </div>
         <div class="stat-item">
           <span class="stat-value">{{ partner.stats.total_convertidos || 0 }}</span>
           <span class="stat-label">Conv.</span>
-        </div>
-        <div class="stat-item highlight-stat">
-          <span class="stat-value">{{ partner.stats.taxa_conversao || '0%' }}</span>
-          <span class="stat-label">Taxa</span>
         </div>
       </div>
       <div class="partner-stats-skeleton" v-else>
@@ -48,10 +44,10 @@ defineEmits(['generate', 'download', 'poster', 'view-leads'])
     </div>
 
     <div class="card-footer">
-      <!-- Botão para visualizar leads associados -->
-      <button class="btn btn-secondary btn-full mb-3" @click="$emit('view-leads', partner)">
+      <!-- Botão para visualizar solicitações associadas -->
+      <button class="btn btn-secondary btn-full mb-3" @click="$emit('view-solicitacoes', partner)">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-        Ver Leads
+        Ver Solicitações
       </button>
 
       <div class="actions-main">
@@ -234,7 +230,7 @@ defineEmits(['generate', 'download', 'poster', 'view-leads'])
 /* Stats Styles */
 .partner-stats {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px dashed #e5e7eb;
