@@ -35,7 +35,7 @@ const criar = (dados) => {
  * @returns {Promise<any>}
  */
 const alterarStatus = (id, status) => {
-  return api.patch(`${URI}/${id}`, { status });
+  return api.patch(`${URI}/${id}/status`, { status });
 };
 
 /**

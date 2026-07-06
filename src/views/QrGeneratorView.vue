@@ -54,13 +54,10 @@ const kpiGerais = computed(() => {
     }
   });
 
-  const taxaGeral = solicitacoes > 0 ? ((convertidos / solicitacoes) * 100).toFixed(1) + '%' : '0%';
-
   return {
     totalParceiros,
     totalSolicitacoes: solicitacoes,
-    totalConvertidos: convertidos,
-    taxaGeral
+    totalConvertidos: convertidos
   };
 });
 
@@ -71,7 +68,7 @@ const fetchPartnerSummary = async (partner) => {
     
     // Suportar retornos com wrapper { data: {...}} ou response plana
     const data = summary.data || summary
-    const leads = data.total_leads || 0
+    const leads = data.total_solicitacoes || 0
     const vendas = data.total_vendas || 0
     
     partner.stats = {
@@ -465,10 +462,7 @@ const closeModal = () => {
           <span class="kpi-label">Convertidos</span>
           <span class="kpi-value">{{ kpiGerais.totalConvertidos }}</span>
         </div>
-        <div class="kpi-card">
-          <span class="kpi-label">Taxa Média</span>
-          <span class="kpi-value">{{ kpiGerais.taxaGeral }}</span>
-        </div>
+
       </div>
 
       <div v-if="loading" class="loading-state">

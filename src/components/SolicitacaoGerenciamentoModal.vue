@@ -25,7 +25,7 @@ const isSaving = ref(false);
 const saveError = ref(null);
 const saveSuccess = ref(false);
 
-const statusOptions = ['novo', 'em_atendimento', 'convertido', 'perdido'];
+const statusOptions = ['nova', 'em_atendimento', 'convertida', 'perdida'];
 
 // Deep compare original and editable data to detect changes
 const isDirty = computed(() => {
@@ -56,7 +56,19 @@ const fetchData = async (id) => {
     // Use cloneDeep to prevent reactivity bleeding
     originalData.value = cloneDeep(solicitacaoData);
     editableData.value = cloneDeep(solicitacaoData);
-    historico.value = historicoData.historico || [];
+    historico.value = historicoData || [];
+
+    // Fallback for null dados_comerciais to prevent template errors
+    if (editableData.value && editableData.value.dados_comerciais === null) {
+      editableData.value.dados_comerciais = {
+        operadora: '',
+        plano: '',
+        valor_mensal: null,
+        valor_adesao: null,
+        vendedor: '',
+        observacoes: ''
+      };
+    }
 
   } catch (err) {
     error.value = err.message || 'Falha ao carregar os dados da solicitação.';
@@ -104,6 +116,8 @@ const handleSave = async () => {
     await fetchData(props.solicitacaoId);
     // Emit event to notify parent component
     emit('solicitacao-updated', originalData.value); 
+    // Close the modal after successful save
+    emit('close');
 
   } catch (err) {
     saveError.value = err.message;
@@ -142,10 +156,10 @@ const formatDate = (dateValue) => {
 
 const formatStatus = (status) => {
   const dictionary = {
-    'novo': 'Novo', 'em_atendimento': 'Em Atendimento',
-    'convertido': 'Convertido', 'perdido': 'Perdido',
+    'nova': 'Nova', 'em_atendimento': 'Em Atendimento',
+    'convertida': 'Convertida', 'perdida': 'Perdida',
   };
-  return dictionary[status || 'novo'] || status;
+  return dictionary[status || 'nova'] || status;
 };
 
 </script>
@@ -213,8 +227,8 @@ const formatStatus = (status) => {
           <section class="data-section">
             <h2>Histórico de Status</h2>
             <ul v-if="historico.length > 0" class="history-list">
-              <li v-for="item in historico" :key="item.timestamp" class="history-item">
-                <span class="history-date">{{ formatDate(item.timestamp) }}</span>
+              <li v-for="item in historico" :key="item.data" class="history-item">
+                <span class="history-date">{{ formatDate(item.data) }}</span>
                 <span class="history-status">{{ formatStatus(item.status) }}</span>
               </li>
             </ul>

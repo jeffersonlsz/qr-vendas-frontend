@@ -56,10 +56,10 @@
         <div class="select-group">
           <select v-model="currentStatusFilter" :disabled="isLoading">
             <option value="todos">Todos os Status</option>
-            <option value="novo">Novo</option>
+            <option value="nova">Nova</option>
             <option value="em_atendimento">Em Atendimento</option>
-            <option value="convertido">Convertido</option>
-            <option value="perdido">Perdido</option>
+            <option value="convertida">Convertida</option>
+            <option value="perdida">Perdida</option>
           </select>
           <select v-model="currentPartnerFilter" :disabled="isLoading || activePartnerId !== null">
             <option value="todos">Todos os Parceiros</option>
@@ -125,15 +125,15 @@
                       Gerenciar
                     </button>
                     <select 
-                      :value="solicitacao.status || 'novo'" 
+                      :value="solicitacao.status || 'nova'" 
                       @change="updateSolicitacaoStatus(solicitacao.id, $event.target.value)"
                       :disabled="isLoading || isUpdating === solicitacao.id"
                       class="action-select inline-select"
                     >
-                      <option value="novo">Novo</option>
+                      <option value="nova">Nova</option>
                       <option value="em_atendimento">Atender</option>
-                      <option value="convertido">Converter</option>
-                      <option value="perdido">Perder</option>
+                      <option value="convertida">Converter</option>
+                      <option value="perdida">Perder</option>
                     </select>
                     <div v-if="isUpdating === solicitacao.id" class="mini-spinner"></div>
                   </div>
@@ -285,12 +285,12 @@ onMounted(() => {
 
 const formatStatus = (status) => {
   const dictionary = {
-    'novo': 'Novo',
+    'nova': 'Nova',
     'em_atendimento': 'Em Atend.',
-    'convertido': 'Convertido',
-    'perdido': 'Perdido',
+    'convertida': 'Convertida',
+    'perdida': 'Perdida',
   };
-  return dictionary[status || 'novo'] || status;
+  return dictionary[status || 'nova'] || status;
 };
 
 const formatDate = (dateValue) => {
@@ -373,10 +373,16 @@ const formatDate = (dateValue) => {
 .solicitacao-id { font-weight: 600; color: #111827; font-family: monospace; font-size: 0.8rem;}
 .parceiro-badge { background: #f3f4f6; padding: 6px 10px; border-radius: 8px; color: #4b5563; font-size: 0.8rem; font-weight: 600; }
 .status-badge { display: inline-flex; padding: 6px 12px; border-radius: 100px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
-.status-badge.novo { background-color: #f3f4f6; color: #4b5563 !important; }
-.status-badge.em_atendimento { background-color: #eff6ff; color: #2563eb !important; }
-.status-badge.convertido { background-color: #ecfdf5; color: #059669 !important; }
-.status-badge.perdido { background-color: #fef2f2; color: #dc2626 !important; }
+.status-badge.novo { background-color: #f3f4f6; color: black !important; }
+.status-badge.em_atendimento { background-color: #eff6ff; color: black !important; }
+.status-badge.convertido { background-color: #ecfdf5; color: black !important; }
+.status-badge.perdido { background-color: #fef2f2; color: black !important; }
+
+/* Dark Theme Adjustments for Status Badges */
+.theme-dark .status-badge.novo { background-color: #374151; color: white !important; }
+.theme-dark .status-badge.em_atendimento { background-color: #1e3a8a; color: white !important; }
+.theme-dark .status-badge.convertido { background-color: #064e3b; color: white !important; }
+.theme-dark .status-badge.perdido { background-color: #7f1d1d; color: white !important; }
 .actions-cell { display: flex; align-items: center; gap: 8px; }
 .inline-select { padding: 8px 12px; font-size: 0.85rem; border-radius: 8px; background-color: transparent; border: 1px solid #e5e7eb; font-weight: 600; color: #374151; cursor: pointer; }
 .inline-select:hover:not(:disabled) { border-color: #10b981; background-color: #f9fafb; }
