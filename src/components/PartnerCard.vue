@@ -1,12 +1,24 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   partner: {
     type: Object,
     required: true
   }
 })
 
-defineEmits(['generate', 'download', 'poster', 'view-solicitacoes'])
+defineEmits(['generate', 'download', 'poster', 'view-solicitacoes', 'associate-card'])
+
+const isAvailable = computed(() => props.partner.status_cartao !== 'EM_USO')
+
+const cardStatus = computed(() => {
+  return isAvailable.value ? 'Disponível' : 'Em uso'
+})
+
+const cardStatusClass = computed(() => {
+  return isAvailable.value ? 'status-available' : 'status-in-use'
+})
 </script>
 
 <template>
@@ -16,41 +28,70 @@ defineEmits(['generate', 'download', 'poster', 'view-solicitacoes'])
         {{ partner.nome.charAt(0).toUpperCase() }}
       </div>
       <div class="partner-info">
-        <h3 class="name">{{ partner.nome }}</h3>
-        <span class="badge">{{ partner.id }}</span>
+        <h3 class="name">
+          {{ partner.nome }}
+          <span :class="['status-badge', cardStatusClass]">{{ cardStatus }}</span>
+        </h3>
+        <span v-if="partner.codigo_cartao" class="code-highlight">{{ partner.codigo_cartao }}</span>
+        <span class="badge" :class="{'secondary-id': partner.codigo_cartao}">{{ partner.id }}</span>
       </div>
     </div>
     
     <div class="card-body">
-      <div class="contact-info">
+      <div class="contact-info" v-if="!isAvailable">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
         <span>{{ partner.telefone }}</span>
       </div>
 
       <!-- Métricas de Desempenho (Mini Dashboard) -->
-      <div class="partner-stats" v-if="partner.stats">
-        <div class="stat-item">
-          <span class="stat-value">{{ partner.stats.total_solicitacoes || 0 }}</span>
-          <span class="stat-label">Solic.</span>
+      <div v-if="!isAvailable">
+        <div class="partner-stats" v-if="partner.stats">
+          <div class="stat-item">
+            <span class="stat-value">{{ partner.stats.total_solicitacoes || 0 }}</span>
+            <span class="stat-label">Solic.</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ partner.stats.total_convertidos || 0 }}</span>
+            <span class="stat-label">Conv.</span>
+          </div>
         </div>
-        <div class="stat-item">
-          <span class="stat-value">{{ partner.stats.total_convertidos || 0 }}</span>
-          <span class="stat-label">Conv.</span>
+        <div class="partner-stats-skeleton" v-else>
+          Carregando métricas...
         </div>
       </div>
-      <div class="partner-stats-skeleton" v-else>
-        Carregando métricas...
+       <div v-else class="available-card-placeholder">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="placeholder-icon"><path d="M5.52 19c.64-2.2 1.84-3 3.22-3h6.52c1.38 0 2.58.8 3.22 3"/><circle cx="12" cy="10" r="3"/><circle cx="12" cy="12" r="10"/></svg>
+        <p>Aguardando associação</p>
       </div>
     </div>
 
     <div class="card-footer">
-      <!-- Botão para visualizar solicitações associadas -->
-      <button class="btn btn-secondary btn-full mb-3" @click="$emit('view-solicitacoes', partner)">
+      <button v-if="!isAvailable" class="btn btn-secondary btn-full" @click="$emit('view-solicitacoes', partner)">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
         Ver Solicitações
       </button>
 
       <div class="actions-main">
+        <!-- Botão Condicional: Associar ou Editar -->
+        <button 
+          v-if="isAvailable"
+          class="btn btn-primary" 
+          @click="$emit('associate-card', partner)"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          Associar Cartão
+        </button>
+
+        <button 
+          v-else
+          class="btn btn-outline" 
+          disabled 
+          title="Funcionalidade disponível em breve."
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+          Editar Parceiro
+        </button>
+        
         <button class="btn btn-primary" @click="$emit('generate', partner)">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="3"></rect><rect x="14" y="7" width="3" height="3"></rect><rect x="7" y="14" width="3" height="3"></rect><rect x="14" y="14" width="3" height="3"></rect></svg>
           Gerar QR
@@ -60,7 +101,7 @@ defineEmits(['generate', 'download', 'poster', 'view-solicitacoes'])
           Baixar
         </button>
       </div>
-      <button class="btn btn-text" @click="$emit('poster', partner)">
+      <button class="btn btn-text btn-full" @click="$emit('poster', partner)">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         Gerar Cartaz
       </button>
@@ -92,6 +133,7 @@ defineEmits(['generate', 'download', 'poster', 'view-solicitacoes'])
   align-items: center;
   gap: 16px;
   border-bottom: 1px solid #f8f9fa;
+  min-height: 80px; /* Adjust to ensure enough space for new elements */
 }
 
 .avatar {
@@ -106,10 +148,13 @@ defineEmits(['generate', 'download', 'poster', 'view-solicitacoes'])
   font-size: 1.25rem;
   font-weight: 600;
   box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+  flex-shrink: 0; /* Prevent shrinking when text wraps */
 }
 
 .partner-info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .name {
@@ -117,6 +162,40 @@ defineEmits(['generate', 'download', 'poster', 'view-solicitacoes'])
   font-size: 1.1rem;
   font-weight: 600;
   color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between name and status badge */
+}
+
+.status-badge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap; /* Prevent badge text from wrapping */
+  align-items: center;
+  justify-content: center;
+}
+
+.status-available {
+  background: #fef08a; /* Yellow */
+  color: #a16207;
+}
+
+.status-in-use {
+  background: #dcfce7; /* Green */
+  color: #16a34a;
+}
+
+.code-highlight {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1f2937; /* Darker color for emphasis */
+  margin-bottom: 2px;
 }
 
 .badge {
@@ -128,6 +207,13 @@ defineEmits(['generate', 'download', 'poster', 'view-solicitacoes'])
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.5px;
+}
+
+.secondary-id {
+  font-size: 0.65rem; /* Smaller font for technical ID */
+  color: #6b7280;
+  background: transparent;
+  padding: 0;
 }
 
 .card-body {
@@ -270,6 +356,28 @@ defineEmits(['generate', 'download', 'poster', 'view-solicitacoes'])
   text-align: center;
 }
 
+.available-card-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px 0;
+  height: 100%;
+}
+
+.placeholder-icon {
+  color: #e5e7eb;
+  margin-bottom: 8px;
+}
+
+.available-card-placeholder p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
 /* Manual Dark Mode Theme */
 :deep(.theme-dark) .partner-card,
 .theme-dark .partner-card {
@@ -290,10 +398,28 @@ defineEmits(['generate', 'download', 'poster', 'view-solicitacoes'])
 .theme-dark .name {
   color: #f9fafb;
 }
-:deep(.theme-dark) .badge,
+.theme-dark .badge,
 .theme-dark .badge {
   background: #374151;
   color: #e5e7eb;
+}
+:deep(.theme-dark) .status-available,
+.theme-dark .status-available {
+  background: #a16207; /* Darker yellow */
+  color: #fef08a;
+}
+:deep(.theme-dark) .status-in-use,
+.theme-dark .status-in-use {
+  background: #16a34a; /* Darker green */
+  color: #dcfce7;
+}
+:deep(.theme-dark) .code-highlight,
+.theme-dark .code-highlight {
+  color: #f9fafb;
+}
+:deep(.theme-dark) .secondary-id,
+.theme-dark .secondary-id {
+  color: #9ca3af;
 }
 :deep(.theme-dark) .contact-info,
 .theme-dark .contact-info {
@@ -335,5 +461,13 @@ defineEmits(['generate', 'download', 'poster', 'view-solicitacoes'])
 :deep(.theme-dark) .btn-secondary:hover,
 .theme-dark .btn-secondary:hover {
   background: #4b5563;
+}
+:deep(.theme-dark) .available-card-placeholder .placeholder-icon,
+.theme-dark .available-card-placeholder .placeholder-icon {
+  color: #374151;
+}
+:deep(.theme-dark) .available-card-placeholder p,
+.theme-dark .available-card-placeholder p {
+  color: #6b7280;
 }
 </style>

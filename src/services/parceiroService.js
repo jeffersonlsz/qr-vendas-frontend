@@ -39,9 +39,30 @@ const buscarSolicitacoes = (id) => {
   return api.get(`${URI}/${id}/solicitacoes`);
 };
 
+/**
+ * Generates a batch of partners.
+ * @param {{ quantidade: number, prefixo_nome: string }} data
+ * @returns {Promise<any>}
+ */
+const gerarLote = (data) => {
+  return api.post(`${URI}/lote`, data);
+};
+
+/**
+ * Associates a card with a partner's details.
+ * @param {string} id The ID of the partner/card to associate.
+ * @param {object} dados The partner's data.
+ * @returns {Promise<any>}
+ */
+const associar = (id, dados) => {
+  return api.post(`${URI}/${id}/associar`, dados);
+};
+
 export const parceiroService = {
   listar,
   criar,
   buscarResumo,
   buscarSolicitacoes,
+  gerarLote,
+  associar,
 };

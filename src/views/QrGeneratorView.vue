@@ -2,6 +2,8 @@
 import { ref, onMounted, computed } from 'vue'
 import QRCode from 'qrcode'
 import PartnerCard from '../components/PartnerCard.vue'
+import BulkGenerationModal from '../components/BulkGenerationModal.vue'
+import AssociarCartaoModal from '../components/AssociarCartaoModal.vue'
 import { parceiroService } from '@/services/parceiroService'
 
 // Estado
@@ -22,7 +24,13 @@ const modalQrOpen = ref(false)
 const modalPosterOpen = ref(false)
 const modalAddPartnerOpen = ref(false)
 const modalSolicitacoesOpen = ref(false)
+const modalBulkGenerateOpen = ref(false)
+const modalAssociateOpen = ref(false)
+const isSavingBulk = ref(false)
+const isSavingAssociation = ref(false)
+
 const selectedPartner = ref(null)
+const partnerToAssociate = ref(null)
 const selectedPartnerSolicitacoes = ref([])
 const qrDataUrl = ref('')
 const qrUrlText = ref('')
@@ -399,6 +407,69 @@ const savePartner = async () => {
   }
 }
 
+const handleBulkGenerate = () => {
+  modalBulkGenerateOpen.value = true
+}
+
+const handleCloseBulkModal = () => {
+  if (!isSavingBulk.value) {
+    modalBulkGenerateOpen.value = false
+  }
+}
+
+const executeBulkGeneration = async ({ quantidade }) => {
+  isSavingBulk.value = true
+  try {
+    const response = await parceiroService.gerarLote({
+      quantidade,
+      prefixo_nome: 'Parceiro'
+    })
+    
+    // A API pode retornar a mensagem de sucesso diretamente ou dentro de um objeto `data`
+    const successMessage = response?.data?.message || response?.message || `${quantidade} cartões criados com sucesso.`;
+    
+    alert(successMessage);
+    modalBulkGenerateOpen.value = false
+    fetchPartners()
+  } catch (error) {
+    console.error('Erro ao gerar cartões em lote:', error)
+    const errorMessage = error?.response?.data?.message || 'Ocorreu um erro ao gerar os cartões. Tente novamente.';
+    alert(errorMessage);
+  } finally {
+    isSavingBulk.value = false
+  }
+}
+
+const handleAssociateCard = (partner) => {
+  partnerToAssociate.value = partner
+  modalAssociateOpen.value = true
+}
+
+const handleCloseAssociateModal = () => {
+  if (!isSavingAssociation.value) {
+    modalAssociateOpen.value = false
+    partnerToAssociate.value = null
+  }
+}
+
+const executeAssociation = async (formData) => {
+  if (!partnerToAssociate.value) return
+
+  isSavingAssociation.value = true
+  try {
+    await parceiroService.associar(partnerToAssociate.value.id, formData)
+    alert('Cartão associado com sucesso.')
+    modalAssociateOpen.value = false
+    fetchPartners()
+  } catch (error) {
+    console.error('Erro ao associar cartão:', error)
+    const errorMessage = error?.response?.data?.message || 'Ocorreu um erro ao associar o cartão. Tente novamente.';
+    alert(errorMessage);
+  } finally {
+    isSavingAssociation.value = false
+  }
+}
+
 const closeModal = () => {
   modalQrOpen.value = false
   modalPosterOpen.value = false
@@ -436,6 +507,11 @@ const closeModal = () => {
           <button class="action-btn btn-success-light" @click="handleAddPartner">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             + parceiro
+          </button>
+
+          <button class="action-btn" @click="handleBulkGenerate">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            Gerar cartões em lote
           </button>
 
           <button class="theme-toggle-btn" @click="toggleTheme">
@@ -480,6 +556,7 @@ const closeModal = () => {
           @download="handleDownloadQr"
           @poster="handleGeneratePoster"
           @view-solicitacoes="handleViewSolicitacoes"
+          @associate-card="handleAssociateCard"
         />
       </div>
     </main>
@@ -745,8 +822,20 @@ const closeModal = () => {
       </Transition>
     </Teleport>
   </div>
+  <BulkGenerationModal
+    :open="modalBulkGenerateOpen"
+    :is-saving="isSavingBulk"
+    @close="handleCloseBulkModal"
+    @generate="executeBulkGeneration"
+  />
+   <AssociarCartaoModal
+    :open="modalAssociateOpen"
+    :is-saving="isSavingAssociation"
+    :partner="partnerToAssociate"
+    @close="handleCloseAssociateModal"
+    @save="executeAssociation"
+  />
 </template>
-
 <style scoped>
 /* Layout Base */
 .dashboard-layout {
