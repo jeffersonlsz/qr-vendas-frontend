@@ -41,6 +41,27 @@ async function request(endpoint, options = {}) {
   }
 }
 
+async function requestDownload(endpoint, options = {}) {
+  const url = `${BASE_URL}${endpoint}`;
+
+  const config = {
+    ...options,
+    headers: {
+      ...options.headers,
+    },
+  };
+
+  const response = await fetch(url, config);
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    const errorMessage = errorData?.message || `HTTP error! status: ${response.status}`;
+    throw new Error(errorMessage);
+  }
+
+  return response;
+}
+
 export const api = {
   get(endpoint, options) {
     return request(endpoint, { ...options, method: 'GET' });
@@ -57,4 +78,7 @@ export const api = {
   delete(endpoint, options) {
     return request(endpoint, { ...options, method: 'DELETE' });
   },
+  download(endpoint, options) {
+    return requestDownload(endpoint, { ...options, method: 'GET' });
+  }
 };

@@ -1,27 +1,61 @@
-<script setup>
-import { computed } from 'vue'
+<script>
+import CartazModal from './CartazModal.vue';
 
-const props = defineProps({
-  partner: {
-    type: Object,
-    required: true
+export default {
+  components: {
+    CartazModal,
+  },
+  props: {
+    partner: {
+      type: Object,
+      required: true
+    }
+  },
+  emits: ['generate', 'download', 'poster', 'view-solicitacoes', 'associate-card'],
+  data() {
+    return {
+      isCartazModalOpen: false,
+      selectedPartnerForCartaz: null,
+    }
+  },
+  computed: {
+    isAvailable() {
+      return this.partner.status_cartao !== 'EM_USO'
+    },
+    cardStatus() {
+      return this.isAvailable ? 'Disponível' : 'Em uso'
+    },
+    cardStatusClass() {
+      return this.isAvailable ? 'status-available' : 'status-in-use'
+    },
+    isPartnerDataValidForPoster() {
+      return !!this.partner.codigo_cartao;
+    }
+  },
+  methods: {
+    handleGerarCartaz() {
+      if (!this.partner.codigo_cartao) {
+        alert('Este parceiro não tem um código de cartão para gerar o cartaz.');
+        return;
+      }
+      this.selectedPartnerForCartaz = this.partner;
+      this.isCartazModalOpen = true;
+    },
+    closeCartazModal() {
+      this.isCartazModalOpen = false;
+      this.selectedPartnerForCartaz = null;
+    }
   }
-})
-
-defineEmits(['generate', 'download', 'poster', 'view-solicitacoes', 'associate-card'])
-
-const isAvailable = computed(() => props.partner.status_cartao !== 'EM_USO')
-
-const cardStatus = computed(() => {
-  return isAvailable.value ? 'Disponível' : 'Em uso'
-})
-
-const cardStatusClass = computed(() => {
-  return isAvailable.value ? 'status-available' : 'status-in-use'
-})
+}
 </script>
 
 <template>
+  <CartazModal 
+    :open="isCartazModalOpen" 
+    :partner="selectedPartnerForCartaz"
+    @close="closeCartazModal"
+  />
+
   <div class="partner-card">
     <div class="card-header">
       <div class="avatar">
@@ -101,15 +135,22 @@ const cardStatusClass = computed(() => {
           Baixar
         </button>
       </div>
-      <button class="btn btn-text btn-full" @click="$emit('poster', partner)">
+      <button class="btn btn-text btn-full" @click="handleGerarCartaz" :disabled="!isPartnerDataValidForPoster" :title="!isPartnerDataValidForPoster ? 'Associe um cartão para gerar o cartaz' : 'Gerar cartaz'">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-        Gerar Cartaz
+        <span>Gerar Cartaz</span>
       </button>
     </div>
   </div>
 </template>
 
 <style scoped>
+.pdf-generation-container {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  z-index: -1;
+}
+
 .partner-card {
   background: #ffffff;
   border-radius: 16px;
@@ -376,6 +417,39 @@ const cardStatusClass = computed(() => {
   font-size: 0.85rem;
   color: #9ca3af;
   font-weight: 500;
+}
+
+.btn .spinner {
+  animation: rotate 2s linear infinite;
+  width: 16px;
+  height: 16px;
+}
+
+.btn .path {
+  stroke: currentColor;
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
 }
 
 /* Manual Dark Mode Theme */

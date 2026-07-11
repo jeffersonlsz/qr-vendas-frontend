@@ -202,179 +202,60 @@ const downloadPoster = () => {
 
   const canvas = document.createElement('canvas');
   canvas.width = 1080;
-  canvas.height = 1750; 
+  canvas.height = 1920;
   const ctx = canvas.getContext('2d');
-  
-  // Cores
-  const colorGreen = '#008445';
-  const colorDark = '#0a1c2e';
-  const colorLightGreen = '#e6f4ea';
-  const colorWhite = '#ffffff';
 
-  // Helper: Desenhar Retângulo Arredondado
-  const roundRect = (x, y, w, h, r) => {
-    if (w < 2 * r) r = w / 2;
-    if (h < 2 * r) r = h / 2;
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.arcTo(x + w, y, x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x, y + h, r);
-    ctx.arcTo(x, y + h, x, y, r);
-    ctx.arcTo(x, y, x + w, y, r);
-    ctx.closePath();
-  };
+  const background = new Image();
+  background.src = '/lp-header.jpg'; // A imagem está na pasta public
 
-  // 1. Fundo Verde (Moldura)
-  ctx.fillStyle = colorGreen;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
-  // 2. Card Branco Interno
-  ctx.fillStyle = colorWhite;
-  roundRect(30, 30, canvas.width - 60, canvas.height - 60, 40);
-  ctx.fill();
+  background.onload = () => {
+    // 1. Desenha a imagem de fundo, cobrindo todo o canvas
+    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-  // 3. Header - Escudo com Plus
-  ctx.strokeStyle = colorGreen;
-  ctx.lineWidth = 10;
-  ctx.lineJoin = 'round';
-  ctx.lineCap = 'round';
-  
-  // Desenho simplificado do escudo
-  ctx.beginPath();
-  ctx.moveTo(540, 80);
-  ctx.lineTo(600, 100);
-  ctx.lineTo(600, 150);
-  ctx.quadraticCurveTo(600, 200, 540, 230);
-  ctx.quadraticCurveTo(480, 200, 480, 150);
-  ctx.lineTo(480, 100);
-  ctx.closePath();
-  ctx.stroke();
-  
-  // Plus no escudo
-  ctx.beginPath();
-  ctx.moveTo(540, 125);
-  ctx.lineTo(540, 185);
-  ctx.moveTo(510, 155);
-  ctx.lineTo(570, 155);
-  ctx.stroke();
-
-  // 4. Título Principal
-  ctx.fillStyle = colorGreen;
-  ctx.font = '900 80px Arial, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('ECONOMIZE', canvas.width / 2, 330);
-  ctx.fillText('NO SEU PLANO', canvas.width / 2, 410);
-  ctx.fillText('DE SAÚDE', canvas.width / 2, 490);
-
-  // 5. WhatsApp Pill
-  const pillW = 700;
-  const pillH = 80;
-  const pillX = (canvas.width - pillW) / 2;
-  const pillY = 540;
-  ctx.fillStyle = colorGreen;
-  roundRect(pillX, pillY, pillW, pillH, 40);
-  ctx.fill();
-  
-  ctx.fillStyle = colorWhite;
-  ctx.font = 'bold 32px Arial, sans-serif';
-  ctx.fillText('ATENDIMENTO RÁPIDO VIA WHATSAPP', canvas.width / 2 + 20, 592);
-
-  // 6. Benefícios (Features)
-  const drawFeature = (x, iconPath, text1, text2, text3) => {
-    // Círculo ícone
-    ctx.fillStyle = colorGreen;
-    ctx.beginPath();
-    ctx.arc(x, 700, 45, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Texto
-    ctx.fillStyle = colorDark;
-    ctx.font = '900 24px Arial, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(text1, x + 60, 685);
-    ctx.fillText(text2, x + 60, 715);
-    if (text3) ctx.fillText(text3, x + 60, 745);
-  };
-
-  drawFeature(80, '', 'SEM', 'BUROCRACIA');
-  drawFeature(390, '', 'PLANOS', 'INDIVIDUAIS', 'E FAMILIARES');
-  drawFeature(740, '', 'AS MELHORES', 'OPERADORAS');
-
-  // 7. QR Code Area
-  // Sombra do box do QR
-  ctx.shadowColor = 'rgba(0,0,0,0.1)';
-  ctx.shadowBlur = 30;
-  ctx.shadowOffsetY = 10;
-  
-  ctx.fillStyle = colorWhite;
-  const qrBoxSize = 480;
-  const qrBoxX = (canvas.width - qrBoxSize) / 2;
-  const qrBoxY = 820;
-  roundRect(qrBoxX, qrBoxY, qrBoxSize, qrBoxSize, 40);
-  ctx.fill();
-  ctx.shadowColor = 'transparent';
-
-  // Desenho do QR (espera carregar)
-  const img = new Image();
-  img.onload = () => {
-    ctx.drawImage(img, qrBoxX + 40, qrBoxY + 40, qrBoxSize - 80, qrBoxSize - 80);
-    
-    // Scan Pill (Fica sobre o QR)
-    ctx.fillStyle = colorDark;
-    roundRect(qrBoxX + 60, qrBoxY + qrBoxSize - 40, qrBoxSize - 120, 70, 35);
-    ctx.fill();
-    
-    ctx.fillStyle = colorWhite;
-    ctx.font = 'bold 24px Arial, sans-serif';
+    // 2. Título Principal
+    ctx.fillStyle = '#ffffff'; // Cor branca
+    ctx.font = 'bold 80px Arial, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('ESCANEIE E FALE CONOSCO', canvas.width / 2, qrBoxY + qrBoxSize + 5);
+    ctx.fillText('CARTAZ DE DIVULGAÇÃO', canvas.width / 2, 200);
 
-    // 8. Parceiro Box
-    const partnerY = 1320;
-    ctx.fillStyle = colorLightGreen;
-    roundRect(80, partnerY, canvas.width - 160, 160, 30);
-    ctx.fill();
-    
-    // Ícone Carro no Parceiro
-    ctx.fillStyle = colorGreen;
-    ctx.beginPath();
-    ctx.arc(170, partnerY + 80, 60, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Carro simplificado (SVG path-like)
-    ctx.fillStyle = colorWhite;
-    ctx.fillRect(140, partnerY + 75, 60, 20); // Base
-    ctx.fillRect(150, partnerY + 60, 40, 15); // Topo
-    
-    ctx.fillStyle = colorGreen;
-    ctx.font = 'bold 36px Arial, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText('PARCEIRO CREDENCIADO', 260, partnerY + 95);
+    // 3. Desenho do QR Code
+    const qrImg = new Image();
+    qrImg.onload = () => {
+      const qrSize = 500;
+      const qrX = (canvas.width - qrSize) / 2;
+      const qrY = 400;
+      ctx.fillStyle = 'white';
+      ctx.fillRect(qrX - 20, qrY - 20, qrSize + 40, qrSize + 40); // White background for QR
+      ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
+      
+      // 4. Texto de instrução abaixo do QR Code
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '50px Arial, sans-serif';
+      ctx.textAlign = 'center';
+      const textY = qrY + qrSize + 120;
+      ctx.fillText('Aponte a câmera do seu celular para o QR Code', canvas.width / 2, textY);
+      ctx.fillText('e aproveite os benefícios.', canvas.width / 2, textY + 60);
+      
+      // 5. Informações do Parceiro
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 52px Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`Parceiro: ${selectedPartner.value.nome}`, canvas.width / 2, textY + 200);
 
-    // 9. Footer Features (Icones + Texto)
-    const footerY = 1550; // Aumentar altura se necessário ou ajustar
-    // Devido ao tempo, farei apenas 3 colunas de texto no rodapé
-    ctx.fillStyle = colorDark;
-    ctx.font = 'bold 20px Arial, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('ATENDIMENTO', 200, 1600);
-    ctx.fillText('AUTORIZADO', 200, 1630);
-    
-    ctx.fillText('CORRETORES', 540, 1600);
-    ctx.fillText('ESPECIALIZADOS', 540, 1630);
-    
-    ctx.fillText('+500 ATENDIMENTOS', 880, 1600);
-    ctx.fillText('REALIZADOS', 880, 1630);
-
-    // Download
-    const a = document.createElement('a');
-    a.href = canvas.toDataURL('image/png');
-    a.download = `cartaz_${selectedPartner.value.id}.png`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+      // 6. Trigger do Download
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = `cartaz_${selectedPartner.value.id}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    };
+    qrImg.src = qrDataUrl.value;
   };
-  img.src = qrDataUrl.value;
+  
+  background.onerror = () => {
+    alert('Erro ao carregar a imagem de fundo do cartaz.');
+  }
 }
 
 const handleAddPartner = () => {
@@ -1220,251 +1101,66 @@ const closeModal = () => {
   background: #059669;
 }
 
-/* Poster Preview Design - Screenshot Inspired */
-.poster-preview {
-  display: flex;
-  justify-content: center;
-  padding: 10px 0;
+/* Poster Preview Design */
+.poster-preview-container {
+  position: relative;
+  width: 100%;
+  max-width: 375px; /* Proporcional a 1080px de largura */
+  aspect-ratio: 1080 / 1920;
+  margin: 0 auto;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
-.poster-card {
-  width: 400px;
-  height: 560px;
-  background: #008445;
-  border-radius: 24px;
-  padding: 12px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-}
-
-.poster-inner {
+.poster-bg-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  background: white;
-  border-radius: 16px;
+  object-fit: cover;
+}
+
+.poster-preview-overlay {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 16px;
-  box-sizing: border-box;
-  position: relative;
-  overflow: hidden;
-}
-
-.poster-header {
+  justify-content: center;
+  padding: 20px;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
+  color: white;
 }
 
-.shield-plus {
-  color: #008445;
-  width: 32px;
-  height: 32px;
-}
-
-.poster-title {
-  margin: 0;
-  color: #008445;
+.poster-preview-title {
   font-size: 1.5rem;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: -0.02em;
+  font-weight: bold;
+  margin-top: 30px;
 }
 
-.whatsapp-pill {
-  background: #008445;
-  color: white;
-  padding: 6px 16px;
-  border-radius: 100px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 4px;
-}
-
-.whatsapp-pill svg {
-  width: 14px;
-  height: 14px;
-}
-
-.poster-features {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: 16px;
-  padding: 0 8px;
-}
-
-.p-feature {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: 1;
-}
-
-.f-icon {
-  width: 24px;
-  height: 24px;
-  background: #008445;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  flex-shrink: 0;
-}
-
-.f-icon svg {
-  width: 14px;
-  height: 14px;
-}
-
-.f-text {
-  font-size: 0.45rem;
-  font-weight: 800;
-  line-height: 1.1;
-  color: #0a1c2e;
-}
-
-.poster-qr-section {
-  margin-top: 16px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-.qr-white-box {
+.poster-preview-qr-box {
   background: white;
-  padding: 12px;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 2;
-  position: relative;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 50px;
 }
 
-.qr-white-box img {
-  width: 120px;
-  height: 120px;
+.poster-preview-qr {
+  width: 150px;
+  height: 150px;
 }
 
-.scan-pill {
-  background: #0a1c2e;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 100px;
-  font-size: 0.55rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: -10px;
-  position: relative;
-  z-index: 3;
-}
-
-.scan-pill svg {
-  width: 10px;
-  height: 10px;
-}
-
-.qr-arrow {
-  position: absolute;
-  left: 20%;
-  bottom: 0;
-  width: 40px;
-  height: 40px;
-  transform: rotate(-45deg);
-}
-
-.poster-partner-box {
-  margin-top: 16px;
-  background: #e6f4ea;
-  border-radius: 12px;
-  width: 100%;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-sizing: border-box;
-}
-
-.partner-car-icon {
-  width: 36px;
-  height: 36px;
-  background: #008445;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.partner-car-icon svg {
-  width: 20px;
-  height: 20px;
-}
-
-.partner-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.partner-label {
-  font-size: 0.5rem;
-  font-weight: 700;
-  color: #008445;
-}
-
-.partner-name {
-  margin: 0;
+.poster-preview-text {
+  margin-top: 50px;
   font-size: 1rem;
-  font-weight: 800;
-  color: #0a1c2e;
 }
 
-.poster-footer-features {
-  margin-top: auto;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 8px 0;
-  border-top: 1px solid #f3f4f6;
-}
-
-.pf-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-  justify-content: center;
-}
-
-.pf-item svg {
-  width: 16px;
-  height: 16px;
-  color: #008445;
-}
-
-.pf-item span {
-  font-size: 0.4rem;
-  font-weight: 700;
-  color: #0a1c2e;
-  line-height: 1.1;
-}
-
-.border-left {
-  border-left: 1px solid #f3f4f6;
+.poster-preview-partner {
+  margin-top: 20px;
+  font-size: 1.1rem;
+  font-weight: bold;
 }
 
 /* Animations */

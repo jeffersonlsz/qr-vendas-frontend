@@ -58,6 +58,7 @@ const associar = (id, dados) => {
   return api.post(`${URI}/${id}/associar`, dados);
 };
 
+
 export const parceiroService = {
   listar,
   criar,
