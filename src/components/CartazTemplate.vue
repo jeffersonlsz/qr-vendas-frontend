@@ -1,7 +1,8 @@
 <template>
   <div class="poster-a4" ref="cartaz">
     <div class="hero-section">
-      <img src="@/assets/hero.png" alt="Família feliz" class="hero-image" />
+      <img src="/lp-header.jpg" alt="Família feliz" class="hero-image" />
+      <div class="hero-fade"></div>
     </div>
 
     <div class="main-content">
@@ -44,7 +45,7 @@
             <strong>PARCEIRO CREDENCIADO:</strong> {{ partnerName }} - {{ partnerCode }}
           </div>
           <div class="card-code">
-            Código do Cartão: {{ partnerId }}
+            Código do Cartão: {{ partnerId.slice(5).toUpperCase() }}
           </div>
         </div>
       </div>
@@ -109,40 +110,73 @@ export default {
 .poster-a4 {
   width: 210mm;
   height: 297mm;
-  background-color: #F3F4F6; /* Light gray background */
+  background-color: #fafafa; /* Lighter background */
   display: flex;
   flex-direction: column;
   font-family: 'Roboto', sans-serif;
-  
+  position: relative;
+  overflow: hidden;
+}
+
+.poster-a4::before {
+  content: '';
+  position: absolute;
+  inset: 8mm;
+  border: 2px solid #10B981; /* Lighter border */
+  border-radius: 20mm; /* More rounded */
+  z-index: 9999; /* Ensure it's above all other elements */
+  pointer-events: none;
+}
+
+.hero-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 30%;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,.15) 40%,
+      rgba(255,255,255,.45) 65%,
+      rgba(255,255,255,.80) 85%,
+      rgba(255,255,255,1) 100%
+    );
 }
 
 .hero-section {
   width: 100%;
-  height: 35%; /* Approx 35% of A4 height */
+  height: 38%; /* Approx 38% of A4 height */
+  position: relative; /* Added for hero-fade positioning */
+  z-index: 1; /* Ensure hero-section content is above pseudo-element */
 }
 
 .hero-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 30%;
+  object-position: center top;
 }
 
 .main-content {
-  padding: 0 40px;
+  padding: 0 40px 10px 40px; /* Added padding-bottom */
   text-align: center;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  position: relative; /* Ensure content is above hero-fade */
+  z-index: 2; /* Ensure main content is above hero-fade */
+  margin-top: -60px; /* Adjust as needed to pull headline closer to fade */
 }
 
 .headline {
   font-family: 'Oswald', sans-serif;
-  font-size: 3.8rem;
-  line-height: 1.1;
+  font-size: 2.4rem; /* Smaller font size */
+  line-height: 1; /* Tighter line height */
   text-transform: uppercase;
   color: #1F2937;
-  margin: 20px 0;
+  margin: 0px 0 10px 0; /* Adjusted margin to move headline up */
   font-weight: 700;
 }
 
@@ -153,18 +187,18 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  padding: 12px 0;
+  padding: 10px 0; /* Slightly reduced padding */
   border-radius: 8px;
-  font-size: 1.2rem;
+  font-size: 1.1rem; /* Slightly smaller font */
   font-weight: 700;
-  margin: 10px auto;
+  margin: 8px auto; /* Slightly reduced margin */
   width: 90%;
 }
 
 .benefits-section {
   display: flex;
   justify-content: space-around;
-  margin: 25px 0;
+  margin: 18px 0; /* Reduced margin */
 }
 
 .benefit-item {
@@ -186,22 +220,22 @@ export default {
 .qr-main-section {
   display: flex;
   align-items: center;
-  gap: 30px;
-  margin: 20px 0;
+  gap: 20px; /* Reduced gap */
+  margin: 0 0 15px 0; /* Set margin-top to 0 and preserve bottom margin */
 }
 
 .qrcode-container {
-  background-color: white;
+  background: white;
   padding: 16px;
-  border-radius: 18px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  border: 1px solid #E5E7EB;
+  border-radius: 24px; /* More rounded */
+  box-shadow: 0 10px 30px rgba(0,0,0,.08); /* More premium shadow */
+  border: none; /* Removed border */
 }
 
 .cta-container {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px; /* Reduced gap */
   flex-grow: 1;
   text-align: left;
 }
@@ -209,9 +243,9 @@ export default {
 .main-cta {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 1.4rem;
-  font-weight: 700;
+  gap: 10px; /* Reduced gap */
+  font-size: 1.2rem; /* Slightly smaller font */
+  font-weight: 600; /* Slightly lighter font weight */
   color: #111827;
 }
 
@@ -235,7 +269,7 @@ export default {
 
 .footer {
   background-color: #FFFFFF;
-  padding: 15px 40px;
+  padding: 10px 40px 20px 40px; /* Adjusted padding-top and padding-bottom */
   border-top: 1px solid #E5E7EB;
 }
 
@@ -246,7 +280,7 @@ export default {
   color: #6B7280;
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin: 0 0 10px 0;
+  margin: 0; /* Removed margin-bottom */
 }
 
 .footer-logos {

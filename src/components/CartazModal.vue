@@ -43,11 +43,12 @@ const handlePrint = async () => {
   isPrinting.value = true;
 
   try {
+    await document.fonts.ready;
     const element = cartazContainer.value.$el;
     const filename = `cartaz-${props.partner.codigo_cartao}.pdf`;
     const opt = {
       margin: 0,
-      filename: filename,
+      filename,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },

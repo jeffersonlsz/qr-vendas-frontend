@@ -18,7 +18,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'generate'])
 
-const quantidade = ref(100)
+const quantidade = ref(5)
 const selectedOperadorId = ref(null)
 const validationError = ref(false)
 
