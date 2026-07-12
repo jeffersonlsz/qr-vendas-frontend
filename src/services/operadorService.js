@@ -1,25 +1,15 @@
 import { api } from './api';
 
-const URI = '/operadores';
+const URI = '/api/v1/operadores';
 
 /**
- * Lists all operadores.
+ * Lists all operators.
  * @returns {Promise<any>}
  */
-const listarOperadores = () => {
+const listar = () => {
   return api.get(URI);
 };
 
-/**
- * Creates a new operador.
- * @param {object} payload
- * @returns {Promise<any>}
- */
-const criarOperador = (payload) => {
-  return api.post(URI, payload);
-};
-
 export const operadorService = {
-  listarOperadores,
-  criarOperador,
+  listar,
 };

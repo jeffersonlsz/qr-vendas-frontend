@@ -9,12 +9,19 @@ const props = defineProps({
   isSaving: {
     type: Boolean,
     default: false
+  },
+  operadores: {
+    type: Array,
+    default: () => []
   }
 })
 
 const emit = defineEmits(['close', 'generate'])
 
 const quantidade = ref(100)
+const selectedOperadorId = ref(null)
+const validationError = ref(false)
+
 
 watch(quantidade, (newValue) => {
   if (newValue < 1) {
@@ -26,13 +33,24 @@ watch(quantidade, (newValue) => {
 })
 
 const handleGenerate = () => {
+  validationError.value = false
+  if (!selectedOperadorId.value) {
+    validationError.value = true
+    return
+  }
+  
   if (quantidade.value >= 1 && quantidade.value <= 1000) {
-    emit('generate', { quantidade: quantidade.value })
+    emit('generate', { 
+      quantidade: quantidade.value,
+      operadorId: selectedOperadorId.value 
+    })
   }
 }
 
 const handleClose = () => {
   if (!props.isSaving) {
+    selectedOperadorId.value = null
+    validationError.value = false
     emit('close')
   }
 }
@@ -50,7 +68,7 @@ const handleClose = () => {
           
           <div class="modal-body">
             <p class="modal-description">
-              Informe quantos cartões deverão ser criados.
+              Informe quantos cartões deverão ser criados e o operador responsável.
               <br>
               Cada cartão ficará disponível para posterior distribuição aos parceiros.
             </p>
@@ -70,6 +88,26 @@ const handleClose = () => {
             <div v-if="quantidade < 1 || quantidade > 1000" class="error-message">
               A quantidade deve ser entre 1 e 1000.
             </div>
+
+            <div class="form-group">
+              <label for="operador">Operador Responsável</label>
+              <select 
+                id="operador" 
+                v-model="selectedOperadorId"
+                class="form-control"
+                :disabled="isSaving || !operadores.length"
+              >
+                <option :value="null" disabled>
+                  {{ operadores.length ? 'Selecione um operador' : 'Nenhum operador disponível' }}
+                </option>
+                <option v-for="operador in operadores" :key="operador.id" :value="operador.id">
+                  {{ operador.nome }}
+                </option>
+              </select>
+            </div>
+            <div v-if="validationError" class="error-message">
+              É obrigatório selecionar um operador.
+            </div>
           </div>
 
           <div class="modal-footer">
@@ -77,7 +115,7 @@ const handleClose = () => {
             <button 
               class="btn-success" 
               @click="handleGenerate" 
-              :disabled="isSaving || quantidade < 1 || quantidade > 1000"
+              :disabled="isSaving || quantidade < 1 || quantidade > 1000 || !selectedOperadorId"
             >
               <span v-if="isSaving">Gerando...</span>
               <span v-else>Gerar cartões</span>

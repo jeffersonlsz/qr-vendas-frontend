@@ -3,10 +3,13 @@ import { ref, onMounted, computed } from 'vue'
 import QRCode from 'qrcode'
 import PartnerCard from '../components/PartnerCard.vue'
 import BulkGenerationModal from '../components/BulkGenerationModal.vue'
+import AssociarCartaoModal from '../components/AssociarCartaoModal.vue'
 import { parceiroService } from '../services/parceiroService'
+import { operadorService } from '../services/operadorService'
 
 // Estado
 const partners = ref([])
+const operadores = ref([])
 const loading = ref(false)
 const loadingMessages = ['Aguarde um pouco..', 'Estamos trabalhando...', 'Quase lá', 'Estamos processando...']
 const currentMessageIndex = ref(0)
@@ -24,6 +27,8 @@ const modalPosterOpen = ref(false)
 const modalAddPartnerOpen = ref(false)
 const modalBulkOpen = ref(false)
 const isSavingBulk = ref(false)
+const modalAssociateOpen = ref(false)
+const isSavingAssociation = ref(false)
 const modalSolicitacoesOpen = ref(false)
 const selectedPartner = ref(null)
 const selectedPartnerSolicitacoes = ref([])
@@ -57,13 +62,10 @@ const  kpiGerais = computed(() => {
     }
   });
 
-  const taxaGeral = solicitacoes > 0 ? ((convertidos / solicitacoes) * 100).toFixed(1) + '%' : '0%';
-
   return {
     totalParceiros,
     totalSolicitacoes: solicitacoes,
     totalConvertidos: convertidos,
-    taxaGeral
   };
 });
 
@@ -124,6 +126,16 @@ const fetchPartners = async () => {
   }
 }
 
+const fetchOperadores = async () => {
+  try {
+    const response = await operadorService.listar()
+    operadores.value = response.data || response
+  } catch (error) {
+    console.error('Erro ao buscar operadores:', error)
+    operadores.value = []
+  }
+}
+
 const handleViewSolicitacoes = async (partner) => {
   selectedPartner.value = partner
   try {
@@ -139,6 +151,7 @@ const handleViewSolicitacoes = async (partner) => {
 
 onMounted(() => {
   fetchPartners()
+  fetchOperadores()
 })
 
 const generateQrUrl = (partnerId) => {
@@ -389,11 +402,12 @@ const handleOpenBulkModal = () => {
   modalBulkOpen.value = true
 }
 
-const handleBulkGenerate = async ({ quantidade }) => {
+const handleBulkGenerate = async ({ quantidade, operadorId }) => {
   isSavingBulk.value = true
   try {
     const response = await parceiroService.gerarLote({
       quantidade,
+      operador_id: operadorId,
       prefixo_nome: 'Parceiro'
     })
     if (response.success) {
@@ -405,9 +419,38 @@ const handleBulkGenerate = async ({ quantidade }) => {
     }
   } catch (error) {
     console.error('Erro ao gerar parceiros:', error)
-    alert('Ocorreu um erro ao gerar os parceiros. Verifique o console.')
+    const message = error.message.includes('operador') 
+      ? error.message
+      : 'Ocorreu um erro ao gerar os parceiros. Verifique o console.'
+    alert(message)
   } finally {
     isSavingBulk.value = false
+  }
+}
+
+const handleOpenAssociateModal = (partner) => {
+  selectedPartner.value = partner
+  modalAssociateOpen.value = true
+}
+
+const handleSaveAssociation = async (formData) => {
+  if (!selectedPartner.value) return
+
+  isSavingAssociation.value = true
+  try {
+    const response = await parceiroService.associar(selectedPartner.value.id, formData)
+    if (response.success) {
+      alert('Cartão associado com sucesso!')
+      modalAssociateOpen.value = false
+      fetchPartners()
+    } else {
+      throw new Error(response.message || 'Erro ao associar cartão')
+    }
+  } catch (error) {
+    console.error('Erro ao associar cartão:', error)
+    alert('Ocorreu um erro ao associar o cartão. Verifique o console e os dados informados.')
+  } finally {
+    isSavingAssociation.value = false
   }
 }
 
@@ -441,6 +484,7 @@ const closeModal = () => {
   modalAddPartnerOpen.value = false
   modalSolicitacoesOpen.value = false
   modalBulkOpen.value = false
+  modalAssociateOpen.value = false
   setTimeout(() => {
     selectedPartner.value = null
     qrDataUrl.value = ''
@@ -504,10 +548,6 @@ const closeModal = () => {
           <span class="kpi-label">Convertidos</span>
           <span class="kpi-value">{{ kpiGerais.totalConvertidos }}</span>
         </div>
-        <div class="kpi-card">
-          <span class="kpi-label">Taxa Média</span>
-          <span class="kpi-value">{{ kpiGerais.taxaGeral }}</span>
-        </div>
       </div>
 
       <div v-if="loading" class="loading-state">
@@ -525,6 +565,7 @@ const closeModal = () => {
           @download="handleDownloadQr"
           @poster="handleGeneratePoster"
           @view-solicitacoes="handleViewSolicitacoes"
+          @associate-card="handleOpenAssociateModal"
         />
       </div>
     </main>
@@ -794,8 +835,18 @@ const closeModal = () => {
     <BulkGenerationModal
       :open="modalBulkOpen"
       :is-saving="isSavingBulk"
+      :operadores="operadores"
       @close="closeModal"
       @generate="handleBulkGenerate"
+    />
+
+    <!-- Modal Associar Cartão -->
+    <AssociarCartaoModal
+      :open="modalAssociateOpen"
+      :is-saving="isSavingAssociation"
+      :partner="selectedPartner"
+      @close="closeModal"
+      @save="handleSaveAssociation"
     />
   </div>
 </template>
