@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/v1';
 
 /**
  * Encapsulates the logic for making HTTP requests using the native fetch API.
@@ -30,6 +30,12 @@ async function request(endpoint, options = {}) {
       const errorMessage = errorData?.message || `HTTP error! status: ${response.status}`;
       throw new Error(errorMessage);
     }
+
+    // Workaround for hanging spinner: avoid parsing body for status updates
+    if (endpoint.includes('/status') && config.method === 'PATCH') {
+      return null;
+    }
+
     // Handle cases with no content
     if (response.status === 204) {
       return null;

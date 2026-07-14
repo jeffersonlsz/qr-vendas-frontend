@@ -76,12 +76,15 @@ const fetchPartnerSummary = async (partner) => {
     
     // Suportar retornos com wrapper { data: {...}} ou response plana
     const data = summary.data || summary
-    const leads = data.total_leads || 0
+    const leads = data.total_solicitacoes || 0
     const vendas = data.total_vendas || 0
+    const convertidos = data.total_convertidos || 0
+    
     
     partner.stats = {
       total_solicitacoes: leads,
-      total_convertidos: vendas
+      total_convertidos: convertidos,
+      total_vendas: vendas
     }
   } catch (err) {
     // Valores de fallback se o backend estiver incompleto p/ esse parceiro

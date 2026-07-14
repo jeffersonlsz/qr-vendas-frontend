@@ -1,6 +1,6 @@
 import { api } from './api';
 
-const URI = '/api/v1/operadores';
+const URI = '/operadores';
 
 /**
  * Lists all operators.

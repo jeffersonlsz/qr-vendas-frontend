@@ -1,6 +1,6 @@
 import { api } from './api';
 
-const URI = '/api/v1/parceiros';
+const URI = '/parceiros';
 
 /**
  * Lists all partners.

@@ -63,7 +63,7 @@
           </select>
           <select v-model="currentPartnerFilter" :disabled="isLoading || activePartnerId !== null">
             <option value="todos">Todos os Parceiros</option>
-            <option v-for="p in uniquePartners" :key="p" :value="p">{{ p }}</option>
+            <option v-for="p in uniquePartners" :key="p.id" :value="p.id">{{ p.name }}</option>
           </select>
         </div>
       </div>
@@ -105,10 +105,10 @@
                 :class="{ 'updating': isUpdating === solicitacao.id }"
               >
                 <td class="text-gray-500">{{ solicitacao.id }}</td>
-                <td class="text-gray-500">{{ solicitacao.vidas.length }}</td>
+                <td class="text-gray-500">{{ solicitacao.vidas?.length || 0 }}</td>
                 <td class="text-gray-500">{{ solicitacao.cobertura }}</td>
                 <td class="text-gray-500">{{ solicitacao.cidade || 'N/A' }}</td>
-                <td class="text-gray-500">{{ solicitacao.parceiro_id || 'SEM_REF' }}</td>
+                <td class="text-gray-500">{{ solicitacao.parceiro?.nome || solicitacao.parceiro?.id || 'SEM_REF' }}</td>
                 <td>
                   <span :class="['status-badge', solicitacao.status || 'novo']">
                     {{ formatStatus(solicitacao.status) }}
@@ -220,7 +220,7 @@ const filteredSolicitacoes = computed(() => {
   }
   
   if (currentPartnerFilter.value !== 'todos') {
-    filtered = filtered.filter(s => s.parceiro_id === currentPartnerFilter.value);
+    filtered = filtered.filter(s => s.parceiro && s.parceiro.id === currentPartnerFilter.value);
   }
   
   if (searchQuery.value) {
@@ -228,7 +228,8 @@ const filteredSolicitacoes = computed(() => {
     filtered = filtered.filter(s => 
       (s.id && s.id.toLowerCase().includes(q)) || 
       (s.cidade && s.cidade.toLowerCase().includes(q)) ||
-      (s.parceiro_id && s.parceiro_id.toLowerCase().includes(q))
+      (s.parceiro && s.parceiro.nome && s.parceiro.nome.toLowerCase().includes(q)) ||
+      (s.parceiro && s.parceiro.id && s.parceiro.id.toLowerCase().includes(q))
     );
   }
   
@@ -236,15 +237,20 @@ const filteredSolicitacoes = computed(() => {
 });
 
 const uniquePartners = computed(() => {
-  const partnersSet = new Set(solicitacoes.value.map(s => s.parceiro_id).filter(Boolean));
-  return Array.from(partnersSet);
+  const partnersMap = new Map();
+  solicitacoes.value.forEach(s => {
+    if (s.parceiro && s.parceiro.id) {
+      partnersMap.set(s.parceiro.id, s.parceiro.nome || s.parceiro.id);
+    }
+  });
+  return Array.from(partnersMap, ([id, name]) => ({ id, name }));
 });
 
 const kpi = computed(() => {
   const source = currentPartnerFilter.value !== 'todos' ? filteredSolicitacoes.value : solicitacoes.value;
   const total = source.length;
   const novas = source.filter(s => (s.status === 'novo' || !s.status)).length;
-  const convertidas = source.filter(s => s.status === 'convertido').length;
+  const convertidas = source.filter(s => s.status === 'convertida').length;
   const taxa = total > 0 ? ((convertidas / total) * 100).toFixed(1) + '%' : '0%';
   
   return { total, novas, convertidas, taxa };
@@ -270,7 +276,7 @@ const updateSolicitacaoStatus = async (id, newStatus) => {
     
     const index = solicitacoes.value.findIndex(s => s.id === id);
     if (index !== -1) {
-      solicitacoes.value[index].status = newStatus;
+      solicitacoes.value[index] = { ...solicitacoes.value[index], status: newStatus };
     }
   } catch (error) {
     console.error("Erro ao atualizar status:", error);
