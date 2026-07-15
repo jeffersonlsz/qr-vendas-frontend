@@ -91,7 +91,7 @@
           <table class="solicitacoes-table">
             <thead>
               <tr>
-                <th>ID</th>
+                <th>Protocolo</th>
                 <th>Vidas</th>
                 <th>Cobertura</th>
                 <th>Cidade</th>
@@ -107,7 +107,7 @@
                 :key="solicitacao.id" 
                 :class="{ 'updating': isUpdating === solicitacao.id }"
               >
-                <td class="text-gray-500">{{ solicitacao.id }}</td>
+                <td class="text-gray-500">{{ solicitacao.protocolo }}</td>
                 <td class="text-gray-500">{{ solicitacao.vidas?.length || 0 }}</td>
                 <td class="text-gray-500">{{ solicitacao.cobertura }}</td>
                 <td class="text-gray-500">{{ solicitacao.cidade || 'N/A' }}</td>

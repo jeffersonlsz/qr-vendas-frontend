@@ -21,7 +21,7 @@ const isPrinting = ref(false);
 
 const cartazData = computed(() => {
   if (!props.partner) return null;
-  const qrCodeUrl = `https://app.seusite.com/validar?code=${props.partner.codigo_cartao}`;
+  const qrCodeUrl = `https://qr-saude-alpha.web.app/lp?ref=${props.partner.id}`;
   return {
     partnerName: props.partner.nome,
     partnerCode: props.partner.codigo_cartao,
