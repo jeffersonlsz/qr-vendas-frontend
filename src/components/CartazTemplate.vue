@@ -269,8 +269,9 @@ export default {
 
 .footer {
   background-color: #FFFFFF;
-  padding: 10px 40px 20px 40px; /* Adjusted padding-top and padding-bottom */
+  padding: 8px 40px 12px 40px;
   border-top: 1px solid #E5E7EB;
+  margin-top: -6px;
 }
 
 .footer-title {

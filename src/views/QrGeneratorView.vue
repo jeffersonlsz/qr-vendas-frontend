@@ -4,6 +4,7 @@ import QRCode from 'qrcode'
 import PartnerCard from '../components/PartnerCard.vue'
 import BulkGenerationModal from '../components/BulkGenerationModal.vue'
 import AssociarCartaoModal from '../components/AssociarCartaoModal.vue'
+import OperadorModal from '../components/OperadorModal.vue'
 import { parceiroService } from '../services/parceiroService'
 import { operadorService } from '../services/operadorService'
 
@@ -30,6 +31,8 @@ const isSavingBulk = ref(false)
 const modalAssociateOpen = ref(false)
 const isSavingAssociation = ref(false)
 const modalSolicitacoesOpen = ref(false)
+const modalOperadorOpen = ref(false)
+const isSavingOperador = ref(false)
 const selectedPartner = ref(null)
 const selectedPartnerSolicitacoes = ref([])
 const qrDataUrl = ref('')
@@ -481,6 +484,25 @@ const savePartner = async () => {
   }
 }
 
+const handleSaveOperador = async (formData) => {
+  isSavingOperador.value = true
+  try {
+    const response = await operadorService.criar(formData)
+    if (response.success || response.data) {
+      alert('Operador adicionado com sucesso!')
+      modalOperadorOpen.value = false
+      fetchOperadores()
+    } else {
+      throw new Error(response.message || 'Erro ao salvar operador')
+    }
+  } catch (error) {
+    console.error('Erro ao salvar operador:', error)
+    alert('Ocorreu um erro ao salvar o operador. Verifique o console.')
+  } finally {
+    isSavingOperador.value = false
+  }
+}
+
 const closeModal = () => {
   modalQrOpen.value = false
   modalPosterOpen.value = false
@@ -488,6 +510,7 @@ const closeModal = () => {
   modalSolicitacoesOpen.value = false
   modalBulkOpen.value = false
   modalAssociateOpen.value = false
+  modalOperadorOpen.value = false
   setTimeout(() => {
     selectedPartner.value = null
     qrDataUrl.value = ''
@@ -520,6 +543,11 @@ const closeModal = () => {
           <button class="action-btn" @click="handleOpenBulkModal">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="3"></rect><rect x="14" y="7" width="3" height="3"></rect><rect x="7" y="14" width="3" height="3"></rect><rect x="14" y="14" width="3" height="3"></rect></svg>
             Gerar em Lote
+          </button>
+          
+          <button class="action-btn" @click="modalOperadorOpen = true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            + Operador
           </button>
           
           <button class="action-btn btn-success-light" @click="handleAddPartner">
@@ -557,6 +585,19 @@ const closeModal = () => {
         <div class="loader-container">
           <div class="spinner"></div>
           <p class="loading-message">{{ loadingMessages[currentMessageIndex] }}</p>
+        </div>
+      </div>
+      <div v-else-if="partners.length === 0" class="empty-state">
+        <div class="empty-container">
+          <div class="empty-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="3"></rect><rect x="14" y="7" width="3" height="3"></rect><rect x="7" y="14" width="3" height="3"></rect><rect x="14" y="14" width="3" height="3"></rect></svg>
+          </div>
+          <h2>Não há parceiros cadastrados no momento</h2>
+          <p>Comece adicionando um novo parceiro para gerar QR codes e cartazes.</p>
+          <button class="btn-add-first" @click="handleAddPartner">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Adicionar Primeiro Parceiro
+          </button>
         </div>
       </div>
       <div v-else class="grid-container">
@@ -851,6 +892,14 @@ const closeModal = () => {
       @close="closeModal"
       @save="handleSaveAssociation"
     />
+
+    <!-- Modal Novo Operador -->
+    <OperadorModal
+      :open="modalOperadorOpen"
+      :is-saving="isSavingOperador"
+      @close="closeModal"
+      @save="handleSaveOperador"
+    />
   </div>
 </template>
 
@@ -972,6 +1021,70 @@ const closeModal = () => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 24px;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  min-height: 400px;
+}
+
+.empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  max-width: 400px;
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+}
+
+.empty-container h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.empty-container p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.btn-add-first {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+}
+
+.btn-add-first:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 6px 12px -1px rgba(16, 185, 129, 0.4);
+  transform: translateY(-2px);
 }
 
 .grid-container {
@@ -1634,6 +1747,28 @@ const closeModal = () => {
 }
 .theme-dark .form-control:focus {
   border-color: #10b981;
+}
+
+/* Dark Mode - Empty State */
+.theme-dark .empty-icon {
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+  color: #6b7280;
+}
+
+.theme-dark .empty-container h2 {
+  color: #f9fafb;
+}
+
+.theme-dark .empty-container p {
+  color: #9ca3af;
+}
+
+.theme-dark .btn-add-first {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.theme-dark .btn-add-first:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
 }
 
 /* KPI Banner - Leads style */

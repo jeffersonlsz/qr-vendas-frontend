@@ -11,7 +11,10 @@
             <p>Acompanhe e gerencie as solicitações captadas pelos parceiros</p>
           </div>
         </div>
-        <button @click="router.push('/admin/qr')" class="btn-back">Voltar</button>
+        <div class="header-actions">
+          <button @click="openOperadorModal" class="btn-primary-outline">+ Operador</button>
+          <button @click="router.push('/admin/qr')" class="btn-back">Voltar</button>
+        </div>
       </div>
     </header>
 
@@ -151,6 +154,13 @@
       @close="closeGerenciamentoModal"
       @solicitacao-updated="handleSolicitacaoUpdate"
     />
+
+    <OperadorModal
+      :open="isOperadorModalOpen"
+      :is-saving="isSavingOperador"
+      @close="closeOperadorModal"
+      @save="handleSaveOperador"
+    />
   </div>
 </template>
 
@@ -158,9 +168,37 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { solicitacaoService } from '@/services/solicitacaoService';
+import { operadorService } from '@/services/operadorService';
 import SolicitacaoGerenciamentoModal from '@/components/SolicitacaoGerenciamentoModal.vue';
+import OperadorModal from '@/components/OperadorModal.vue';
 
 const router = useRouter();
+
+// Operador Modal State
+const isOperadorModalOpen = ref(false);
+const isSavingOperador = ref(false);
+
+const openOperadorModal = () => {
+  isOperadorModalOpen.value = true;
+};
+
+const closeOperadorModal = () => {
+  isOperadorModalOpen.value = false;
+};
+
+const handleSaveOperador = async (operadorData) => {
+  isSavingOperador.value = true;
+  try {
+    await operadorService.criar(operadorData);
+    closeOperadorModal();
+    // Maybe show a success message
+  } catch (error) {
+    console.error("Erro ao criar operador:", error);
+    // Maybe show an error message
+  } finally {
+    isSavingOperador.value = false;
+  }
+};
 
 // Modal State
 const isGerenciamentoModalOpen = ref(false);
@@ -322,6 +360,24 @@ const formatDate = (dateValue) => {
   display: flex; /* Added */
   justify-content: space-between; /* Added */
   align-items: center; /* Added */
+}
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+.btn-primary-outline {
+  background-color: transparent;
+  color: #10b981;
+  border: 1px solid #10b981;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.btn-primary-outline:hover {
+  background-color: #10b981;
+  color: white;
 }
 /* New style for back button */
 .btn-back {

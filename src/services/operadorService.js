@@ -10,6 +10,16 @@ const listar = () => {
   return api.get(URI);
 };
 
+/**
+ * Creates a new operator.
+ * @param {object} operador
+ * @returns {Promise<any>}
+ */
+const criar = (operador) => {
+  return api.post(URI, operador);
+};
+
 export const operadorService = {
   listar,
+  criar,
 };
