@@ -7,6 +7,7 @@ import AssociarCartaoModal from '../components/AssociarCartaoModal.vue'
 import OperadorModal from '../components/OperadorModal.vue'
 import { parceiroService } from '../services/parceiroService'
 import { operadorService } from '../services/operadorService'
+import { useAlert } from '@/services/useAlert'
 
 // Estado
 const partners = ref([])
@@ -15,6 +16,9 @@ const loading = ref(false)
 const loadingMessages = ['Aguarde um pouco..', 'Estamos trabalhando...', 'Quase lá', 'Estamos processando...']
 const currentMessageIndex = ref(0)
 const loadingInterval = ref(null)
+
+// Alerta Global
+const { showAlert } = useAlert()
 
 // Controle de Tema
 const theme = ref(localStorage.getItem('theme') || 'light')
@@ -43,7 +47,8 @@ const newPartner = ref({
   nome: '',
   email: '',
   telefone: '',
-  empresa: ''
+  empresa: '',
+  operador_id: null
 })
 
 const isSavingPartner = ref(false)
@@ -399,7 +404,8 @@ const handleAddPartner = () => {
     nome: '',
     email: '',
     telefone: '',
-    empresa: ''
+    empresa: '',
+    operador_id: null
   }
   modalAddPartnerOpen.value = true
 }
@@ -417,18 +423,18 @@ const handleBulkGenerate = async ({ quantidade, operadorId }) => {
       prefixo_nome: 'Parceiro'
     })
     if (response.success) {
-      alert(`${quantidade} parceiros gerados com sucesso!`)
+      showAlert('Sucesso', `${quantidade} parceiros gerados com sucesso!`, 'success')
       modalBulkOpen.value = false
       fetchPartners()
     } else {
       throw new Error(response.message || 'Erro ao gerar parceiros em lote')
     }
   } catch (error) {
-    console.error('Erro ao gerar parceiros:', error)
     const message = error.message.includes('operador') 
       ? error.message
       : 'Ocorreu um erro ao gerar os parceiros. Verifique o console.'
-    alert(message)
+    showAlert('Erro', message, 'error')
+    console.error('Erro ao gerar parceiros:', error)
   } finally {
     isSavingBulk.value = false
   }
@@ -446,23 +452,27 @@ const handleSaveAssociation = async (formData) => {
   try {
     const response = await parceiroService.associar(selectedPartner.value.id, formData)
     if (response.success) {
-      alert('Cartão associado com sucesso!')
+      showAlert('Sucesso', 'Cartão associado com sucesso!', 'success')
       modalAssociateOpen.value = false
       fetchPartners()
     } else {
       throw new Error(response.message || 'Erro ao associar cartão')
     }
   } catch (error) {
+    showAlert('Erro', 'Ocorreu um erro ao associar o cartão. Verifique o console e os dados informados.', 'error')
     console.error('Erro ao associar cartão:', error)
-    alert('Ocorreu um erro ao associar o cartão. Verifique o console e os dados informados.')
   } finally {
     isSavingAssociation.value = false
   }
 }
 
 const savePartner = async () => {
-  if (!newPartner.value.nome) {
-    alert('Por favor, preencha pelo menos o nome do parceiro.')
+  if (!newPartner.value.nome || !newPartner.value.operador_id) {
+    showAlert(
+      'Atenção', 
+      'Por favor, preencha o nome e selecione o operador responsável.', 
+      'warning'
+    )
     return
   }
 
@@ -470,15 +480,15 @@ const savePartner = async () => {
   try {
     const json = await parceiroService.criar(newPartner.value)
     if (json.success) {
-      alert('Parceiro adicionado com sucesso!')
+      showAlert('Sucesso', 'Parceiro adicionado com sucesso!', 'success')
       modalAddPartnerOpen.value = false
       fetchPartners() // Recarrega a lista
     } else {
       throw new Error(json.message || 'Erro ao salvar parceiro')
     }
   } catch (error) {
+    showAlert('Erro', 'Ocorreu um erro ao salvar o parceiro. Verifique o console.', 'error')
     console.error('Erro ao salvar parceiro:', error)
-    alert('Ocorreu um erro ao salvar o parceiro. Verifique o console.')
   } finally {
     isSavingPartner.value = false
   }
@@ -489,15 +499,15 @@ const handleSaveOperador = async (formData) => {
   try {
     const response = await operadorService.criar(formData)
     if (response.success || response.data) {
-      alert('Operador adicionado com sucesso!')
+      showAlert('Sucesso', 'Operador adicionado com sucesso!', 'success')
       modalOperadorOpen.value = false
       fetchOperadores()
     } else {
       throw new Error(response.message || 'Erro ao salvar operador')
     }
   } catch (error) {
+    showAlert('Erro', 'Ocorreu um erro ao salvar o operador. Verifique o console.', 'error')
     console.error('Erro ao salvar operador:', error)
-    alert('Ocorreu um erro ao salvar o operador. Verifique o console.')
   } finally {
     isSavingOperador.value = false
   }
@@ -860,6 +870,23 @@ const closeModal = () => {
               <div class="form-group">
                 <label>Empresa / Referência</label>
                 <input type="text" v-model="newPartner.empresa" placeholder="Ex: Uber BSB" class="form-control" />
+              </div>
+
+              <div class="form-group">
+                <label for="operador_parceiro">Operador Responsável *</label>
+                <select 
+                  id="operador_parceiro" 
+                  v-model="newPartner.operador_id"
+                  class="form-control"
+                  :disabled="isSavingPartner || !operadores.length"
+                >
+                  <option :value="null" disabled>
+                    {{ operadores.length ? 'Selecione um operador' : 'Nenhum operador disponível' }}
+                  </option>
+                  <option v-for="operador in operadores" :key="operador.id" :value="operador.id">
+                    {{ operador.nome }}
+                  </option>
+                </select>
               </div>
             </div>
 

@@ -1,59 +1,51 @@
-<script>
+<script setup>
+import { ref, computed } from 'vue';
 import CartazModal from './CartazModal.vue';
+import { useAlert } from '@/services/useAlert';
 
-export default {
-  components: {
-    CartazModal,
-  },
-  props: {
-    partner: {
-      type: Object,
-      required: true
-    }
-  },
-  emits: ['generate', 'download', 'view-solicitacoes', 'associate-card'],
-  data() {
-    return {
-      isCartazModalOpen: false,
-      selectedPartnerForCartaz: null,
-    }
-  },
-  computed: {
-    isAvailable() {
-      return this.partner.status_cartao !== 'EM_USO'
-    },
-    cardStatus() {
-      return this.isAvailable ? 'Disponível' : 'Em uso'
-    },
-    cardStatusClass() {
-      return this.isAvailable ? 'status-available' : 'status-in-use'
-    },
-    isPartnerDataValidForPoster() {
-      return !!this.partner.codigo_cartao;
-    }
-  },
-  methods: {
-    handleGerarCartaz() {
-      if (!this.partner.codigo_cartao) {
-        alert('Este parceiro não tem um código de cartão para gerar o cartaz.');
-        return;
-      }
-      this.selectedPartnerForCartaz = this.partner;
-      this.isCartazModalOpen = true;
-    },
-    closeCartazModal() {
-      this.isCartazModalOpen = false;
-      this.selectedPartnerForCartaz = null;
-    }
+const props = defineProps({
+  partner: {
+    type: Object,
+    required: true
   }
-}
+});
+
+const emit = defineEmits(['generate', 'download', 'view-solicitacoes', 'associate-card']);
+
+const { showAlert } = useAlert();
+
+const isCartazModalOpen = ref(false);
+const selectedPartnerForCartaz = ref(null);
+
+const isAvailable = computed(() => props.partner.status_cartao !== 'EM_USO');
+const cardStatus = computed(() => isAvailable.value ? 'Disponível' : 'Em uso');
+const cardStatusClass = computed(() => isAvailable.value ? 'status-available' : 'status-in-use');
+const isPartnerDataValidForPoster = computed(() => !!props.partner.codigo_cartao);
+
+const handleGerarCartaz = () => {
+  if (!props.partner.codigo_cartao) {
+    showAlert(
+      'Atenção',
+      'Este parceiro não tem um código de cartão associado para gerar o cartaz.',
+      'warning'
+    );
+    return;
+  }
+  selectedPartnerForCartaz.value = props.partner;
+  isCartazModalOpen.value = true;
+};
+
+const closeCartazModal = () => {
+  isCartazModalOpen.value = false;
+  selectedPartnerForCartaz.value = null;
+};
 </script>
 
 <template>
   <CartazModal 
     :open="isCartazModalOpen" 
     :partner="selectedPartnerForCartaz"
-    @close="closeCartazModal"
+    @close="closeCartazModal()"
   />
 
   <div class="partner-card">
@@ -117,7 +109,7 @@ export default {
         </button>
 
         <button 
-          v-else
+          v-else-if="!isAvailable"
           class="btn btn-outline" 
           disabled 
           title="Funcionalidade disponível em breve."
@@ -126,11 +118,11 @@ export default {
           Editar Parceiro
         </button>
         
-        <button class="btn btn-primary" @click="$emit('generate', partner)">
+        <button v-if="!isAvailable" class="btn btn-primary" @click="$emit('generate', partner)">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="3"></rect><rect x="14" y="7" width="3" height="3"></rect><rect x="7" y="14" width="3" height="3"></rect><rect x="14" y="14" width="3" height="3"></rect></svg>
           Gerar QR
         </button>
-        <button class="btn btn-outline" @click="$emit('download', partner)">
+        <button v-if="!isAvailable" class="btn btn-outline" @click="$emit('download', partner)">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           Baixar
         </button>

@@ -1,9 +1,22 @@
 <script setup>
 import { RouterView } from 'vue-router'
+import AlertModal from '@/components/AlertModal.vue'
+import { useAlert } from '@/services/useAlert'
+
+const { alertState, hideAlert } = useAlert()
 </script>
 
 <template>
   <RouterView />
+
+  <!-- O Modal de Alerta Global fica aqui, pronto para ser ativado de qualquer lugar. -->
+  <AlertModal
+    :is-open="alertState.isOpen"
+    :title="alertState.title"
+    :message="alertState.message"
+    :type="alertState.type"
+    @close="hideAlert"
+  />
 </template>
 
 <style>

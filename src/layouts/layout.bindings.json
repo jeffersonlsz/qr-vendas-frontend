@@ -1,0 +1,2306 @@
+{
+  "layout_name": "cartaz_padrao_a4",
+  "bindings": [
+    {
+      "component_id": "poster_container",
+      "component_type": "container",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 2,
+        "line_end": 103
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Define o formato físico (A4) e a estrutura base do material impresso.",
+        "business_critical": true
+      },
+      "dependencies": [],
+      "reverse_dependencies": [
+        "decorative_border",
+        "hero_section",
+        "main_content",
+        "footer_section"
+      ],
+      "constraints": {
+        "editable": false,
+        "movable": false,
+        "resizable": false,
+        "removable": false,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "critical",
+      "impact_scope": [
+        "pdf_generation",
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "contains",
+          "target": "decorative_border"
+        },
+        {
+          "type": "contains",
+          "target": "hero_section"
+        },
+        {
+          "type": "contains",
+          "target": "main_content"
+        },
+        {
+          "type": "contains",
+          "target": "footer_section"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "print_layout"
+      ],
+      "business_constraints": {
+        "cannot_remove": true,
+        "must_be_visible": true,
+        "minimum_size": {
+          "width": 210,
+          "height": 297
+        },
+        "maximum_size": {
+          "width": 210,
+          "height": 297
+        },
+        "print_constraints": true,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "change_background_color"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": [
+          "remove",
+          "resize",
+          "move"
+        ]
+      },
+      "layout_metrics": {
+        "absolute_x": 0,
+        "absolute_y": 0,
+        "relative_x": 0,
+        "relative_y": 0,
+        "stacking_order": 0,
+        "width_percentage": 100,
+        "height_percentage": 100
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": "Componente raiz que define as dimensões do PDF. Alterações em 'width' e 'height' impactam diretamente as configurações do html2pdf e podem quebrar todo o layout de impressão."
+    },
+    {
+      "component_id": "decorative_border",
+      "component_type": "decoration",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "CSS",
+        "render_method": "CSS Pseudo-element ::before",
+        "line_start": 128,
+        "line_end": 136
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Elemento de identidade visual da marca.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": true,
+        "movable": false,
+        "resizable": false,
+        "removable": true,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "anchored_to",
+          "target": "poster_container"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "branding"
+      ],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": false,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": true
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "change_color",
+          "change_border_radius",
+          "remove"
+        ],
+        "unsafe_changes": [
+          "move",
+          "resize"
+        ],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "absolute_x": null,
+        "absolute_y": null,
+        "relative_x": "8mm",
+        "relative_y": "8mm",
+        "stacking_order": 9999,
+        "width_percentage": null,
+        "height_percentage": null
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": "Implementado como um pseudo-elemento no container principal, seu movimento ou redimensionamento direto não é trivial."
+    },
+    {
+      "component_id": "hero_section",
+      "component_type": "header",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 3,
+        "line_end": 6
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Seção de topo para gerar impacto visual inicial.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [
+        "hero_image",
+        "hero_fade_decoration"
+      ],
+      "constraints": {
+        "editable": false,
+        "movable": true,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "poster_container"
+        },
+        {
+          "type": "above",
+          "target": "main_content"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "remove"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "absolute_x": 0,
+        "absolute_y": 0,
+        "relative_x": 0,
+        "relative_y": 0,
+        "stacking_order": 1,
+        "width_percentage": 100,
+        "height_percentage": 38
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": ""
+    },
+    {
+      "component_id": "hero_image",
+      "component_type": "image",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template (<img> tag)",
+        "line_start": 4,
+        "line_end": 4
+      },
+      "data_source": {
+        "type": "static",
+        "name": "src",
+        "path": "/lp-header.jpg",
+        "default_value": "/lp-header.jpg"
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Imagem de apelo emocional para conectar com o público-alvo.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": true,
+        "movable": false,
+        "resizable": false,
+        "removable": true,
+        "keep_aspect_ratio": true
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "hero_section"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "branding"
+      ],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": true
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "change_image_source",
+          "remove"
+        ],
+        "unsafe_changes": [
+          "resize",
+          "move"
+        ],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "absolute_x": null,
+        "absolute_y": null,
+        "relative_x": 0,
+        "relative_y": 0,
+        "stacking_order": 1,
+        "width_percentage": 100,
+        "height_percentage": 100
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": "A imagem está estática no código. Para ser dinâmica, precisaria ser uma prop."
+    },
+    {
+      "component_id": "hero_fade_decoration",
+      "component_type": "decoration",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "CSS",
+        "render_method": "CSS",
+        "line_start": 138,
+        "line_end": 150
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Degradê na base da imagem herói para transição suave com o conteúdo.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": true,
+        "movable": false,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "hero_section"
+        },
+        {
+          "type": "overlaps",
+          "target": "hero_image"
+        },
+        {
+          "type": "layered_above",
+          "target": "hero_image"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": false,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "change_gradient_colors",
+          "resize",
+          "remove"
+        ],
+        "unsafe_changes": [
+          "move"
+        ],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "absolute_x": null,
+        "absolute_y": null,
+        "relative_x": 0,
+        "relative_y": null,
+        "stacking_order": 2,
+        "width_percentage": 100,
+        "height_percentage": 30
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": ""
+    },
+    {
+      "component_id": "main_content",
+      "component_type": "container",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 8,
+        "line_end": 60
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Agrupa os elementos centrais de comunicação e conversão do cartaz.",
+        "business_critical": true
+      },
+      "dependencies": [],
+      "reverse_dependencies": [
+        "headline_title",
+        "whatsapp_highlight_bar",
+        "benefits_section",
+        "qr_code_section"
+      ],
+      "constraints": {
+        "editable": false,
+        "movable": true,
+        "resizable": true,
+        "removable": false,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "medium",
+      "impact_scope": [
+        "visual",
+        "business_logic"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "poster_container"
+        },
+        {
+          "type": "below",
+          "target": "hero_section"
+        },
+        {
+          "type": "overlaps",
+          "target": "hero_section"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "lead_capture",
+        "partner_identification"
+      ],
+      "business_constraints": {
+        "cannot_remove": true,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "change_padding"
+        ],
+        "unsafe_changes": [
+          "move",
+          "resize"
+        ],
+        "forbidden_changes": [
+          "remove"
+        ]
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição e dimensões são calculadas dinamicamente por Flexbox (flex-grow: 1)."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": "Este container tem uma margem superior negativa para sobrepor a 'hero_section', uma alteração de posição pode quebrar o layout."
+    },
+    {
+      "component_id": "headline_title",
+      "component_type": "title",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template (<h1> tag)",
+        "line_start": 9,
+        "line_end": 14
+      },
+      "data_source": {
+        "type": "static",
+        "name": "text content",
+        "path": null,
+        "default_value": "ECONOMIZE NO SEU PLANO DE SAÚDE"
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Principal chamada de marketing para atrair a atenção do cliente.",
+        "business_critical": true
+      },
+      "dependencies": [],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": true,
+        "movable": true,
+        "resizable": true,
+        "removable": false,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "main_content"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "lead_capture"
+      ],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": true
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "change_color",
+          "change_font",
+          "change_text_content"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": [
+          "remove"
+        ]
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": "Utiliza a fonte 'Oswald'. A remoção pode impactar a conversão."
+    },
+    {
+      "component_id": "whatsapp_highlight_bar",
+      "component_type": "badge",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 16,
+        "line_end": 19
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Faixa verde com ícone e texto sobre atendimento via WhatsApp.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [
+        "whatsapp_icon",
+        "whatsapp_text"
+      ],
+      "constraints": {
+        "editable": true,
+        "movable": true,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "main_content"
+        },
+        {
+          "type": "below",
+          "target": "headline_title"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "lead_capture"
+      ],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": true
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "change_color",
+          "change_border_radius"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": ""
+    },
+    {
+      "component_id": "whatsapp_icon",
+      "component_type": "icon",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "SVG inline",
+        "line_start": 17,
+        "line_end": 17
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Ícone de carro na faixa de destaque (representando Uber).",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": true,
+        "movable": false,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": true
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "whatsapp_highlight_bar"
+        },
+        {
+          "type": "left_of",
+          "target": "whatsapp_text"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "change_icon",
+          "resize",
+          "change_color"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": "O ícone é de um carro, visualmente representando o parceiro 'Uber'."
+    },
+    {
+      "component_id": "whatsapp_text",
+      "component_type": "text",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template (<span> tag)",
+        "line_start": 18,
+        "line_end": 18
+      },
+      "data_source": {
+        "type": "static",
+        "name": "text content",
+        "path": null,
+        "default_value": "ATENDIMENTO RÁPIDO VIA WHATSAPP"
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Texto na faixa de destaque.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": true,
+        "movable": false,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "whatsapp_highlight_bar"
+        },
+        {
+          "type": "right_of",
+          "target": "whatsapp_icon"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "change_text_content",
+          "change_color",
+          "change_font"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": ""
+    },
+    {
+      "component_id": "benefits_section",
+      "component_type": "container",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 21,
+        "line_end": 37
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Container para os três principais benefícios.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [
+        "benefit_bureaucracy",
+        "benefit_plans",
+        "benefit_operators"
+      ],
+      "constraints": {
+        "editable": false,
+        "movable": true,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "main_content"
+        },
+        {
+          "type": "below",
+          "target": "whatsapp_highlight_bar"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": ""
+    },
+    {
+      "component_id": "benefit_bureaucracy",
+      "component_type": "container",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 22,
+        "line_end": 25
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Item de benefício 'Sem Burocracia'.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": true,
+        "movable": true,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "benefits_section"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "change_text_content",
+          "change_icon"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": "Contém um ícone SVG e um texto."
+    },
+    {
+      "component_id": "benefit_plans",
+      "component_type": "container",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 26,
+        "line_end": 29
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Item de benefício 'Planos individuais e familiares'.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": true,
+        "movable": true,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "benefits_section"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "change_text_content",
+          "change_icon"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": "Contém um ícone SVG e um texto."
+    },
+    {
+      "component_id": "benefit_operators",
+      "component_type": "container",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 30,
+        "line_end": 33
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Item de benefício 'As melhores operadoras'.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": true,
+        "movable": true,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "benefits_section"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "change_text_content",
+          "change_icon"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": "Contém um ícone SVG e um texto."
+    },
+    {
+      "component_id": "qr_code_section",
+      "component_type": "container",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 39,
+        "line_end": 58
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Container principal para o QR Code e textos de CTA associados.",
+        "business_critical": true
+      },
+      "dependencies": [],
+      "reverse_dependencies": [
+        "qr_code_container",
+        "cta_container"
+      ],
+      "constraints": {
+        "editable": false,
+        "movable": true,
+        "resizable": true,
+        "removable": false,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "medium",
+      "impact_scope": [
+        "visual",
+        "business_logic"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "main_content"
+        },
+        {
+          "type": "below",
+          "target": "benefits_section"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "lead_capture",
+        "partner_identification"
+      ],
+      "business_constraints": {
+        "cannot_remove": true,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": [
+          "remove"
+        ]
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": ""
+    },
+    {
+      "component_id": "qr_code_container",
+      "component_type": "container",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 40,
+        "line_end": 42
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Caixa branca com sombra que envolve o QR Code.",
+        "business_critical": true
+      },
+      "dependencies": [],
+      "reverse_dependencies": [
+        "qr_code_canvas"
+      ],
+      "constraints": {
+        "editable": true,
+        "movable": true,
+        "resizable": true,
+        "removable": false,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "medium",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "qr_code_section"
+        },
+        {
+          "type": "left_of",
+          "target": "cta_container"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "lead_capture"
+      ],
+      "business_constraints": {
+        "cannot_remove": true,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": true,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "change_background_color",
+          "change_border_radius"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": [
+          "remove"
+        ]
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": ""
+    },
+    {
+      "component_id": "qr_code_canvas",
+      "component_type": "qrcode",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": "generateQRCode",
+        "framework": "javascript",
+        "render_method": "QRCode.toCanvas",
+        "line_start": 71,
+        "line_end": 80
+      },
+      "data_source": {
+        "type": "prop",
+        "name": "qrCodeUrl",
+        "path": "CartazModal.vue -> cartazData -> props.partner.id",
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "Partner",
+        "purpose": "Principal ponto de conversão, direciona o usuário para a landing page de cotação.",
+        "business_critical": true
+      },
+      "dependencies": [
+        "qrCodeUrl"
+      ],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": false,
+        "movable": true,
+        "resizable": true,
+        "removable": false,
+        "keep_aspect_ratio": true
+      },
+      "modification_risk": "critical",
+      "impact_scope": [
+        "visual",
+        "business_logic",
+        "data_integrity"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "qr_code_container"
+        }
+      ],
+      "data_dependencies": [
+        "qrCodeUrl"
+      ],
+      "business_dependencies": [
+        "lead_capture",
+        "partner_tracking"
+      ],
+      "business_constraints": {
+        "cannot_remove": true,
+        "must_be_visible": true,
+        "minimum_size": {
+          "width": 100,
+          "height": 100
+        },
+        "maximum_size": null,
+        "print_constraints": true,
+        "qr_readability_constraints": true,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize"
+        ],
+        "unsafe_changes": [
+          "change_data_source"
+        ],
+        "forbidden_changes": [
+          "remove"
+        ]
+      },
+      "layout_metrics": {
+        "absolute_x": null,
+        "absolute_y": null,
+        "relative_x": null,
+        "relative_y": null,
+        "stacking_order": null,
+        "width_percentage": null,
+        "height_percentage": null
+      },
+      "dynamic_analysis": {
+        "dynamic": true,
+        "source_type": "prop",
+        "source_name": "qrCodeUrl"
+      },
+      "notes": "A remoção deste componente quebra o principal fluxo de negócio do cartaz. A URL é gerada dinamicamente com base no ID do parceiro."
+    },
+    {
+      "component_id": "cta_container",
+      "component_type": "container",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 43,
+        "line_end": 57
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Agrupa os textos de chamada para ação e credenciais do parceiro.",
+        "business_critical": true
+      },
+      "dependencies": [],
+      "reverse_dependencies": [
+        "main_cta_text",
+        "partner_credential_badge",
+        "card_code_text"
+      ],
+      "constraints": {
+        "editable": false,
+        "movable": true,
+        "resizable": true,
+        "removable": false,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "medium",
+      "impact_scope": [
+        "visual",
+        "data_integrity"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "qr_code_section"
+        },
+        {
+          "type": "right_of",
+          "target": "qr_code_container"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "lead_capture",
+        "partner_identification"
+      ],
+      "business_constraints": {
+        "cannot_remove": true,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": [
+          "remove"
+        ]
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": ""
+    },
+    {
+      "component_id": "main_cta_text",
+      "component_type": "text",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 44,
+        "line_end": 47
+      },
+      "data_source": {
+        "type": "static",
+        "name": "text content",
+        "path": null,
+        "default_value": "ESCANEIE E FAÇA SUA COTAÇÃO GRATUITA"
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Instrução para escanear o QR Code.",
+        "business_critical": true
+      },
+      "dependencies": [],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": true,
+        "movable": true,
+        "resizable": true,
+        "removable": false,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "cta_container"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "lead_capture"
+      ],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "change_text_content",
+          "change_color",
+          "change_font"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": [
+          "remove"
+        ]
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": ""
+    },
+    {
+      "component_id": "partner_credential_badge",
+      "component_type": "badge",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 48,
+        "line_end": 50
+      },
+      "data_source": {
+        "type": "prop",
+        "name": "partnerName, partnerCode",
+        "path": "CartazModal.vue -> cartazData -> props.partner",
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "Partner",
+        "purpose": "Identifica o parceiro responsável pela prospecção, garantindo a atribuição correta do lead.",
+        "business_critical": true
+      },
+      "dependencies": [
+        "partnerName",
+        "partnerCode"
+      ],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": false,
+        "movable": true,
+        "resizable": true,
+        "removable": false,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "high",
+      "impact_scope": [
+        "visual",
+        "data_integrity"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "cta_container"
+        },
+        {
+          "type": "below",
+          "target": "main_cta_text"
+        }
+      ],
+      "data_dependencies": [
+        "partnerName",
+        "partnerCode"
+      ],
+      "business_dependencies": [
+        "partner_identification",
+        "partner_tracking"
+      ],
+      "business_constraints": {
+        "cannot_remove": true,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "change_color",
+          "change_background_color"
+        ],
+        "unsafe_changes": [
+          "change_data_source"
+        ],
+        "forbidden_changes": [
+          "remove"
+        ]
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": true,
+        "source_type": "prop",
+        "source_name": "partnerName, partnerCode"
+      },
+      "notes": "Essencial para a regra de negócio de comissionamento e atribuição. A remoção impede a identificação do parceiro."
+    },
+    {
+      "component_id": "card_code_text",
+      "component_type": "text",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 51,
+        "line_end": 53
+      },
+      "data_source": {
+        "type": "prop",
+        "name": "partnerId",
+        "path": "CartazModal.vue -> cartazData -> props.partner.id",
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "Partner",
+        "purpose": "Exibe um ID técnico para referência e suporte.",
+        "business_critical": false
+      },
+      "dependencies": [
+        "partnerId"
+      ],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": false,
+        "movable": true,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "cta_container"
+        },
+        {
+          "type": "below",
+          "target": "partner_credential_badge"
+        }
+      ],
+      "data_dependencies": [
+        "partnerId"
+      ],
+      "business_dependencies": [],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": false,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "change_color",
+          "change_font"
+        ],
+        "unsafe_changes": [
+          "change_data_source"
+        ],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": true,
+        "source_type": "prop",
+        "source_name": "partnerId"
+      },
+      "notes": "Aplica uma transformação (.slice(5).toUpperCase()) no dado recebido."
+    },
+    {
+      "component_id": "footer_section",
+      "component_type": "footer",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 62,
+        "line_end": 70
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Rodapé com título e logos das operadoras parceiras.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [
+        "footer_title",
+        "footer_logos_container"
+      ],
+      "constraints": {
+        "editable": true,
+        "movable": false,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "poster_container"
+        },
+        {
+          "type": "below",
+          "target": "main_content"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "branding"
+      ],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": true
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "resize",
+          "change_background_color"
+        ],
+        "unsafe_changes": [
+          "move"
+        ],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": ""
+    },
+    {
+      "component_id": "footer_title",
+      "component_type": "title",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template (<p> tag)",
+        "line_start": 63,
+        "line_end": 63
+      },
+      "data_source": {
+        "type": "static",
+        "name": "text content",
+        "path": null,
+        "default_value": "OPERADORAS PARCEIRAS"
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Título da seção de logos no rodapé.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": true,
+        "movable": true,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "footer_section"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": false
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "change_text_content",
+          "change_color",
+          "change_font"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": ""
+    },
+    {
+      "component_id": "footer_logos_container",
+      "component_type": "container",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template",
+        "line_start": 64,
+        "line_end": 69
+      },
+      "data_source": {
+        "type": "static",
+        "name": null,
+        "path": null,
+        "default_value": null
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Agrupa as imagens dos logos das operadoras.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [
+        "logo_unimed",
+        "logo_bradesco",
+        "logo_amil",
+        "logo_porto"
+      ],
+      "constraints": {
+        "editable": true,
+        "movable": true,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": false
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "footer_section"
+        },
+        {
+          "type": "below",
+          "target": "footer_title"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "branding"
+      ],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": true
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "add_child",
+          "remove_child"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": "Os logos são estáticos. Para serem dinâmicos, precisariam vir de uma fonte de dados."
+    },
+    {
+      "component_id": "logo_unimed",
+      "component_type": "logo",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template (<img> tag)",
+        "line_start": 65,
+        "line_end": 65
+      },
+      "data_source": {
+        "type": "static",
+        "name": "src",
+        "path": "/unimed.svg",
+        "default_value": "/unimed.svg"
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Logo da operadora Unimed.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": true,
+        "movable": true,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": true
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "footer_logos_container"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "branding"
+      ],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": true
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "remove",
+          "change_image_source"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": ""
+    },
+    {
+      "component_id": "logo_bradesco",
+      "component_type": "logo",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template (<img> tag)",
+        "line_start": 66,
+        "line_end": 66
+      },
+      "data_source": {
+        "type": "static",
+        "name": "src",
+        "path": "/bradesco.svg",
+        "default_value": "/bradesco.svg"
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Logo da operadora Bradesco.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": true,
+        "movable": true,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": true
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "footer_logos_container"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "branding"
+      ],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": true
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "remove",
+          "change_image_source"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": ""
+    },
+    {
+      "component_id": "logo_amil",
+      "component_type": "logo",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template (<img> tag)",
+        "line_start": 67,
+        "line_end": 67
+      },
+      "data_source": {
+        "type": "static",
+        "name": "src",
+        "path": "/amil.svg",
+        "default_value": "/amil.svg"
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Logo da operadora Amil.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": true,
+        "movable": true,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": true
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "footer_logos_container"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "branding"
+      ],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": true
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "remove",
+          "change_image_source"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": ""
+    },
+    {
+      "component_id": "logo_porto",
+      "component_type": "logo",
+      "render_source": {
+        "file": "d:\\workspace_projects_001\\sist-vendas-uber-front-end\\src\\components\\CartazTemplate.vue",
+        "function": null,
+        "framework": "Vue",
+        "render_method": "Vue Template (<img> tag)",
+        "line_start": 68,
+        "line_end": 68
+      },
+      "data_source": {
+        "type": "static",
+        "name": "src",
+        "path": "/portosaude.svg",
+        "default_value": "/portosaude.svg"
+      },
+      "business_source": {
+        "domain_entity": "System",
+        "purpose": "Logo da operadora Porto Saúde.",
+        "business_critical": false
+      },
+      "dependencies": [],
+      "reverse_dependencies": [],
+      "constraints": {
+        "editable": true,
+        "movable": true,
+        "resizable": true,
+        "removable": true,
+        "keep_aspect_ratio": true
+      },
+      "modification_risk": "low",
+      "impact_scope": [
+        "visual"
+      ],
+      "layout_dependencies": [
+        {
+          "type": "inside",
+          "target": "footer_logos_container"
+        }
+      ],
+      "data_dependencies": [],
+      "business_dependencies": [
+        "branding"
+      ],
+      "business_constraints": {
+        "cannot_remove": false,
+        "must_be_visible": true,
+        "minimum_size": null,
+        "maximum_size": null,
+        "print_constraints": false,
+        "qr_readability_constraints": false,
+        "branding_constraints": true
+      },
+      "edit_instructions": {
+        "safe_changes": [
+          "move",
+          "resize",
+          "remove",
+          "change_image_source"
+        ],
+        "unsafe_changes": [],
+        "forbidden_changes": []
+      },
+      "layout_metrics": {
+        "inferred": false,
+        "reason": "Posição calculada dinamicamente por Flexbox."
+      },
+      "dynamic_analysis": {
+        "dynamic": false,
+        "source_type": "static",
+        "source_name": null
+      },
+      "notes": ""
+    }
+  ],
+  "summary": {
+    "manifest_components": 28,
+    "binding_components": 28,
+    "coverage_percentage": 100,
+    "missing_bindings": [],
+    "orphan_bindings": [],
+    "components_with_inferred_data": [],
+    "components_without_render_source": [],
+    "components_without_data_source": [],
+    "components_without_business_source": [],
+    "components_with_missing_dependencies": [],
+    "high_risk_components": [
+      "partner_credential_badge"
+    ],
+    "critical_components": [
+      "poster_container",
+      "qr_code_canvas"
+    ],
+    "dynamic_components": [
+      "qr_code_canvas",
+      "partner_credential_badge",
+      "card_code_text"
+    ]
+  }
+}

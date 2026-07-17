@@ -1,0 +1,43 @@
+{
+  "layout_name": "cartaz_padrao_a4",
+  "semantic_tree": {
+    "poster_container": {
+      "decorative_border": {},
+      "hero_section": {
+        "hero_image": {},
+        "hero_fade_decoration": {}
+      },
+      "main_content": {
+        "headline_title": {},
+        "whatsapp_highlight_bar": {
+          "whatsapp_icon": {},
+          "whatsapp_text": {}
+        },
+        "benefits_section": {
+          "benefit_bureaucracy": {},
+          "benefit_plans": {},
+          "benefit_operators": {}
+        },
+        "qr_code_section": {
+          "qr_code_container": {
+            "qr_code_canvas": {}
+          },
+          "cta_container": {
+            "main_cta_text": {},
+            "partner_credential_badge": {},
+            "card_code_text": {}
+          }
+        }
+      },
+      "footer_section": {
+        "footer_title": {},
+        "footer_logos_container": {
+          "logo_unimed": {},
+          "logo_bradesco": {},
+          "logo_amil": {},
+          "logo_porto": {}
+        }
+      }
+    }
+  }
+}
