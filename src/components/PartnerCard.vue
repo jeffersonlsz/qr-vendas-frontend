@@ -11,7 +11,7 @@ export default {
       required: true
     }
   },
-  emits: ['generate', 'download', 'poster', 'view-solicitacoes', 'associate-card'],
+  emits: ['generate', 'download', 'view-solicitacoes', 'associate-card'],
   data() {
     return {
       isCartazModalOpen: false,
