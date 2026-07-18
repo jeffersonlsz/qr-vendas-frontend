@@ -1,64 +1,153 @@
 <template>
-  <div class="poster-a4" ref="cartaz">
+  <div class="poster-container" ref="posterContainer">
+    <!-- Seção de Cabeçalho / Imagem Herói -->
     <div class="hero-section">
-      <img src="/lp-header.jpg" alt="Família feliz" class="hero-image" />
+      <img src="/lp-header.jpg" alt="Família feliz com seus pets" class="hero-image" />
       <div class="hero-fade"></div>
     </div>
 
+    <!-- Conteúdo Principal do Cartaz -->
     <div class="main-content">
-      <h1 class="headline">
-        ECONOMIZE<br />
-        NO SEU PLANO<br />
-        DE SAÚDE
-      </h1>
-
-      <div class="highlight-bar">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.42 10.04c.08-.42.18-.83.18-1.24 0-1.85-.43-3.58-1.22-5.09a.36.36 0 0 0-.48-.25c-1.6.5-3.32.8-5.08.8-1.76 0-3.48-.3-5.09-.8a.36.36 0 0 0-.47.25C4.43 5.23 4 6.96 4 8.8c0 .4.1.82.18 1.24a.37.37 0 0 0 .37.33h12.5a.37.37 0 0 0 .37-.33zM7.34 18.15c.62.43 1.34.75 2.16.95.8.2 1.6.2 2.4.0.8-.2 1.54-.52 2.16-.95.3-.2.3-.5.05-.71l-1.12-1.3c-.22-.25-.58-.25-.8 0l-.6.6c-.25.25-.6.25-.85 0l-.6-.6c-.22-.25-.58-.25-.8 0l-1.12 1.3c-.25.2-.25.5.05.7zM20.57 14.5c.34-.7.6-1.46.75-2.25.15-.8.23-1.6.23-2.4 0-1.84-.43-3.58-1.22-5.09a.36.36 0 0 0-.48-.25c-1.6.5-3.32.8-5.08.8-1.76 0-3.48-.3-5.09-.8a.36.36 0 0 0-.47.25C4.43 5.23 4 6.96 4 8.8c0 .8.08 1.6.23 2.4.15.8.4 1.55.75 2.25.1.2.32.25.5.15l1.62-.9c.23-.13.52.05.52.3v1.65c0 .28.22.5.5.5h5.5c.28 0 .5-.22.5-.5V14c0-.25.3-.43.52-.3l1.62.9c.18.1.4.05.5-.15z" fill="white"></path></svg>
-        <span>ATENDIMENTO RÁPIDO VIA WHATSAPP</span>
+      
+      <!-- Bloco de Títulos Principal -->
+      <div class="headline-container">
+        <span class="badge-economize">ECONOMIZE</span>
+        <h1 class="headline-title">
+          <span class="text-navy font-black">NO SEU PLANO</span>
+          <span class="text-green font-black">DE SAÚDE</span>
+        </h1>
       </div>
 
-      <div class="benefits-section">
-        <div class="benefit-item">
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-          <p>Sem<br>burocracia</p>
+      <!-- Barra de Chamada de Simulação -->
+      <div class="simulation-bar">
+        <div class="simulation-icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-clock" fill="none" viewBox="0 0 24 24" stroke="#10B981" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
         </div>
-        <div class="benefit-item">
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-          <p>Planos individuais<br>e familiares</p>
-        </div>
-        <div class="benefit-item">
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-          <p>As melhores<br>operadoras</p>
+        <div class="simulation-text">
+          <p class="main-sim-text">FAÇA UMA SIMULAÇÃO</p>
+          <p class="sub-sim-text"><strong class="text-green">GRATUITA</strong> EM 1 MINUTO</p>
         </div>
       </div>
 
-      <div class="qr-main-section">
-        <div class="qrcode-container">
-          <canvas ref="qrcodeCanvas"></canvas>
+      <!-- Seção Central de Engajamento e Conversão (QR Code) -->
+      <div class="qr-code-action-section">
+        
+        <!-- CTA Esquerda: Instrução de Escaneamento com Seta -->
+        <div class="cta-side-wrapper left-alignment">
+          <div class="arrow-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="curved-arrow">
+              <path d="M21 3c0 6-4.5 11-11 11H4" />
+              <polyline points="9 9 4 14 9 19"></polyline>
+            </svg>
+          </div>
+          <p class="cta-instruction-text text-right">
+            <span class="text-navy font-bold">APONTE</span><br>
+            <span class="text-navy font-bold">A CÂMERA</span><br>
+            <span class="text-green font-black">E ESCANEIE</span>
+          </p>
         </div>
-        <div class="cta-container">
-          <div class="main-cta">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5-2.5l5 2v4a2 2 0 0 1-2 2a16 16 0 0 1-15-15a2 2 0 0 1 2-2"></path></svg>
-            <span>ESCANEIE E FAÇA SUA COTAÇÃO GRATUITA</span>
+
+        <!-- QR Code Central -->
+        <div class="qr-code-box-container">
+          <canvas ref="qrCodeCanvas" class="qr-code-canvas"></canvas>
+        </div>
+
+        <!-- CTA Direita: Garantia de Velocidade e Segurança -->
+        <div class="cta-side-wrapper right-alignment">
+          <div class="phone-icon-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-phone-scan">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              <path d="M9 6h6M9 10h6M9 14h6"></path>
+            </svg>
           </div>
-          <div class="partner-credential">
-            <strong>PARCEIRO CREDENCIADO:</strong> {{ partnerName }} - {{ partnerCode }}
+          <p class="cta-instruction-text text-left">
+            <span class="text-navy font-black">É RÁPIDO</span><br>
+            <span class="text-green font-black">E SEGURO</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Seção de Benefícios da Operadora (Movido para baixo do QR Code) -->
+      <div class="benefits-grid-container">
+        <div class="benefit-grid-item">
+          <div class="benefit-icon-shield">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
           </div>
-          <div class="card-code">
-            Código do Cartão: {{ partnerId.slice(5).toUpperCase() }}
+          <p class="benefit-item-text">SEM<br>BUROCRACIA</p>
+        </div>
+
+        <div class="vertical-grid-divider"></div>
+
+        <div class="benefit-grid-item">
+          <div class="benefit-icon-shield">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <p class="benefit-item-text">PLANOS INDIVIDUAIS<br>E FAMILIARES</p>
+        </div>
+
+        <div class="vertical-grid-divider"></div>
+
+        <div class="benefit-grid-item">
+          <div class="benefit-icon-shield">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <p class="benefit-item-text">AS MELHORES<br>OPERADORAS</p>
+        </div>
+      </div>
+
+      <!-- Selo de Identificação e Dados Credenciados do Parceiro -->
+      <div class="partner-identity-card">
+        <div class="partner-pane-left">
+          <div class="pane-badge-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#1E2937" stroke-width="2" class="w-6 h-6">
+              <circle cx="12" cy="8" r="6"></circle>
+              <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path>
+            </svg>
+          </div>
+          <div class="pane-details-content">
+            <span class="pane-label-title">PARCEIRO CREDENCIADO:</span>
+            <span class="pane-data-value">{{ partnerName }} - {{ partnerCode }}</span>
+          </div>
+        </div>
+
+        <div class="partner-pane-right">
+          <div class="pane-badge-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#1E2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+              <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+              <line x1="2" y1="10" x2="22" y2="10"></line>
+            </svg>
+          </div>
+          <div class="pane-details-content">
+            <span class="pane-label-title">CÓDIGO DO CARTÃO:</span>
+            <span class="pane-data-value">{{ partnerId ? partnerId.slice(5).toUpperCase() : 'FCBC1D38' }}</span>
           </div>
         </div>
       </div>
 
     </div>
 
-    <div class="footer">
-      <p class="footer-title">OPERADORAS PARCEIRAS</p>
-      <div class="footer-logos">
-        <img src="/unimed.svg" alt="Unimed Logo" />
-        <img src="/bradesco.svg" alt="Bradesco Logo" />
-        <img src="/amil.svg" alt="Amil Logo" />
-        <img src="/portosaude.svg" alt="Porto Saúde Logo" />
+    <!-- Rodapé Visual com as Marcas das Operadoras -->
+    <div class="footer-section">
+      <p class="footer-brands-title">OPERADORAS PARCEIRAS:</p>
+      <div class="brands-logos-flexrow">
+        <img src="/unimed.svg" alt="Logo Unimed" class="brand-logo-item" />
+        <div class="brand-item-divider"></div>
+        <img src="/bradesco.svg" alt="Logo Bradesco" class="brand-logo-item image-contains-text" />
+        <div class="brand-item-divider"></div>
+        <img src="/amil.svg" alt="Logo Amil" class="brand-logo-item" />
       </div>
     </div>
   </div>
@@ -71,85 +160,77 @@ import { onMounted, ref, watch } from 'vue';
 export default {
   name: 'CartazTemplate',
   props: {
-    partnerName: String,
-    partnerCode: String,
-    qrCodeUrl: String,
-    partnerId: String,
+    partnerName: {
+      type: String,
+      default: 'PARCEIRO 0002'
+    },
+    partnerCode: {
+      type: String,
+      default: 'CARD-000002'
+    },
+    qrCodeUrl: {
+      type: String,
+      default: 'https://google.com'
+    },
+    partnerId: {
+      type: String,
+      default: 'PROMPFCBC1D38'
+    },
   },
   setup(props) {
-    const qrcodeCanvas = ref(null);
+    const qrCodeCanvas = ref(null);
 
     const generateQRCode = async () => {
-      if (props.qrCodeUrl && qrcodeCanvas.value) {
+      if (props.qrCodeUrl && qrCodeCanvas.value) {
         try {
-          await QRCode.toCanvas(qrcodeCanvas.value, props.qrCodeUrl, {
-            width: 250,
+          // Geração dinâmica calibrada para se adequar perfeitamente ao box central
+          await QRCode.toCanvas(qrCodeCanvas.value, props.qrCodeUrl, {
+            width: 170,
             margin: 1,
-            color: { dark: '#111827', light: '#FFFFFF' },
+            color: { 
+              dark: '#0F172A', // Tom marinho escuro combinando com a tipografia do cartaz
+              light: '#FFFFFF' 
+            },
             errorCorrectionLevel: 'H'
           });
         } catch (err) {
-          console.error('Failed to generate QR Code:', err);
+          console.error('Erro na renderização dinâmica do QRCode:', err);
         }
       }
     };
 
     onMounted(generateQRCode);
-    watch(() => props.qrCodeUrl, generateQRCode);
+    watch(() => props.qrCodeUrl, generateQRCode, { immediate: true });
 
     return {
-      qrcodeCanvas,
+      qrCodeCanvas,
     };
   },
 };
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700;900&family=Roboto:wght@400;500;700;900&display=swap');
 
-.poster-a4 {
+/* Regras Globais do Canvas A4 de Impressão */
+.poster-container {
   width: 210mm;
   height: 297mm;
-  background-color: #fafafa; /* Lighter background */
+  background-color: #FFFFFF;
   display: flex;
   flex-direction: column;
   font-family: 'Roboto', sans-serif;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
-.poster-a4::before {
-  content: '';
-  position: absolute;
-  inset: 8mm;
-  border: 2px solid #10B981; /* Lighter border */
-  border-radius: 20mm; /* More rounded */
-  z-index: 9999; /* Ensure it's above all other elements */
-  pointer-events: none;
-}
-
-.hero-fade {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 30%;
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(255,255,255,0) 0%,
-      rgba(255,255,255,.15) 40%,
-      rgba(255,255,255,.45) 65%,
-      rgba(255,255,255,.80) 85%,
-      rgba(255,255,255,1) 100%
-    );
-}
-
+/* Seção de Cabeçalho Visual (Hero) */
 .hero-section {
   width: 100%;
-  height: 38%; /* Approx 38% of A4 height */
-  position: relative; /* Added for hero-fade positioning */
-  z-index: 1; /* Ensure hero-section content is above pseudo-element */
+  height: 35%;
+  position: relative;
+  z-index: 1;
 }
 
 .hero-image {
@@ -159,141 +240,304 @@ export default {
   object-position: center top;
 }
 
+.hero-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 45%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 1) 100%
+  );
+}
+
+/* Container de Conteúdo Dinâmico */
 .main-content {
-  padding: 0 40px 10px 40px; /* Added padding-bottom */
+  padding: 0 45px;
   text-align: center;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  position: relative; /* Ensure content is above hero-fade */
-  z-index: 2; /* Ensure main content is above hero-fade */
-  margin-top: -60px; /* Adjust as needed to pull headline closer to fade */
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+  margin-top: -55px; /* Ajuste suave para encaixar a tipografia sobre o fade */
 }
 
-.headline {
+/* Nova Configuração da Headline */
+.headline-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+
+.badge-economize {
+  background-color: #10B981;
+  color: #FFFFFF;
   font-family: 'Oswald', sans-serif;
-  font-size: 2.4rem; /* Smaller font size */
-  line-height: 1; /* Tighter line height */
-  text-transform: uppercase;
-  color: #1F2937;
-  margin: 0px 0 10px 0; /* Adjusted margin to move headline up */
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 900;
+  padding: 2px 22px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  display: inline-block;
 }
 
-.highlight-bar {
-  background-color: #10B981; /* Main green color */
-  color: white;
+.headline-title {
+  font-family: 'Oswald', sans-serif;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+  margin: 0;
+}
+
+.headline-title .text-navy {
+  font-size: 3.4rem;
+  color: #0F172A;
+}
+
+.headline-title .text-green {
+  font-size: 4.8rem;
+  color: #10B981;
+}
+
+/* Faixa/Barra de Atendimento e Simulação */
+.simulation-bar {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 10px 0; /* Slightly reduced padding */
-  border-radius: 8px;
-  font-size: 1.1rem; /* Slightly smaller font */
-  font-weight: 700;
-  margin: 8px auto; /* Slightly reduced margin */
-  width: 90%;
+  gap: 14px;
+  margin: 5px auto;
 }
 
-.benefits-section {
+.simulation-icon-wrapper .icon-clock {
+  width: 36px;
+  height: 36px;
+}
+
+.simulation-text {
+  text-align: left;
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.2;
+}
+
+.main-sim-text {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0F172A;
+  letter-spacing: -0.2px;
+}
+
+.sub-sim-text {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0F172A;
+  letter-spacing: -0.2px;
+}
+
+/* Área de Ação e Conversão (QR Code Centralizado) */
+.qr-code-action-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  margin: 10px 0;
+}
+
+.qr-code-box-container {
+  background: #FFFFFF;
+  padding: 10px;
+  border-radius: 18px;
+  border: 3px solid #10B981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-code-canvas {
+  width: 170px !important;
+  height: 170px !important;
+  display: block;
+}
+
+.cta-side-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.left-alignment {
+  align-items: flex-end;
+}
+
+.right-alignment {
+  align-items: flex-start;
+}
+
+.arrow-container .curved-arrow {
+  width: 48px;
+  height: 48px;
+  transform: scaleX(-1) rotate(20deg); /* Curva e aponta visualmente para o box do QR code */
+}
+
+.phone-icon-container .icon-phone-scan {
+  width: 42px;
+  height: 42px;
+}
+
+.cta-instruction-text {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.15;
+}
+
+/* Bloco Horizontal de Benefícios (Em Colunas) */
+.benefits-grid-container {
   display: flex;
   justify-content: space-around;
-  margin: 18px 0; /* Reduced margin */
+  align-items: center;
+  margin: 10px 0;
+  background: transparent;
 }
 
-.benefit-item {
+.benefit-grid-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
   flex: 1;
+  max-width: 180px;
 }
 
-.benefit-item p {
-  margin: 0;
-  font-size: 0.95rem;
-  color: #4B5563;
-  font-weight: 500;
-  line-height: 1.3;
-}
-
-.qr-main-section {
+.benefit-icon-shield {
+  width: 38px;
+  height: 38px;
+  background-color: #10B981;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 20px; /* Reduced gap */
-  margin: 0 0 15px 0; /* Set margin-top to 0 and preserve bottom margin */
+  justify-content: center;
 }
 
-.qrcode-container {
-  background: white;
-  padding: 16px;
-  border-radius: 24px; /* More rounded */
-  box-shadow: 0 10px 30px rgba(0,0,0,.08); /* More premium shadow */
-  border: none; /* Removed border */
+.benefit-item-text {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #0F172A;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 
-.cta-container {
+.vertical-grid-divider {
+  width: 1px;
+  height: 45px;
+  background-color: #E2E8F0;
+}
+
+/* Card Unificado de Credenciamento do Parceiro */
+.partner-identity-card {
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  padding: 14px 24px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+.partner-pane-left,
+.partner-pane-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+}
+
+.partner-pane-right {
+  justify-content: flex-end;
+  border-left: 1px solid #E2E8F0;
+  padding-left: 24px;
+}
+
+.pane-badge-icon {
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+}
+
+.pane-details-content {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Reduced gap */
-  flex-grow: 1;
   text-align: left;
 }
 
-.main-cta {
-  display: flex;
-  align-items: center;
-  gap: 10px; /* Reduced gap */
-  font-size: 1.2rem; /* Slightly smaller font */
-  font-weight: 600; /* Slightly lighter font weight */
-  color: #111827;
-}
-
-.partner-credential {
-  background-color: #E5E7EB;
-  color: #374151;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.partner-credential strong {
+.pane-label-title {
+  font-size: 0.75rem;
   font-weight: 700;
+  color: #64748B;
+  letter-spacing: 0.2px;
 }
 
-.card-code {
-  font-size: 0.8rem;
-  color: #6B7280;
+.pane-data-value {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #0F172A;
+  font-family: 'Roboto', sans-serif;
+  margin-top: 1px;
 }
 
-.footer {
+/* Área de Rodapé (Marcas Comerciais) */
+.footer-section {
   background-color: #FFFFFF;
-  padding: 8px 40px 12px 40px;
-  border-top: 1px solid #E5E7EB;
-  margin-top: -6px;
+  padding: 15px 45px 25px 45px;
+  border-top: 1px solid #F1F5F9;
 }
 
-.footer-title {
+.footer-brands-title {
   text-align: center;
   font-size: 0.8rem;
   font-weight: 700;
-  color: #6B7280;
+  color: #94A3B8;
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin: 0; /* Removed margin-bottom */
+  margin: 0 0 14px 0;
 }
 
-.footer-logos {
+.brands-logos-flexrow {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
+  gap: 35px;
 }
 
-.footer-logos img {
-  max-height: 30px;
+.brand-logo-item {
+  max-height: 28px;
   width: auto;
-  filter: grayscale(100%);
-  opacity: 0.6;
+  object-fit: contain;
 }
+
+.brand-logo-item.image-contains-text {
+  max-height: 32px; /* Pequena calibração visual de tamanho para a logo da Bradesco */
+}
+
+.brand-item-divider {
+  width: 1px;
+  height: 22px;
+  background-color: #CBD5E1;
+}
+
+/* Classes Utilitárias de Texto */
+.text-navy { color: #0F172A; }
+.text-green { color: #10B981; }
+.font-bold { font-weight: 700; }
+.font-black { font-weight: 900; }
 </style>
