@@ -12,8 +12,7 @@
           </div>
         </div>
         <div class="header-actions">
-          <button @click="openOperadorModal" class="btn-primary-outline">+ Operador</button>
-          <button @click="router.push('/admin/qr')" class="btn-back">Voltar</button>
+          <button @click="router.push('/admin/qr')" class="action-btn">Voltar</button>
         </div>
       </div>
     </header>
@@ -379,21 +378,27 @@ const formatDate = (dateValue) => {
   background-color: #10b981;
   color: white;
 }
-/* New style for back button */
-.btn-back {
-  background-color: #f0f0f0;
-  color: #333;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.2s ease;
-}
-.btn-back:hover {
-  background-color: #e0e0e0;
-}
 
+/* Estilo do botão de ação, copiado do QrGeneratorView para consistência */
+.action-btn {
+  text-decoration: none;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+.action-btn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
 .title-area { display: flex; align-items: center; gap: 20px; }
 .icon-box { width: 56px; height: 56px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3); }
 .title-area h1 { margin: 0; font-size: 2rem; font-weight: 700; color: #111827; }

@@ -35,6 +35,19 @@ const isDirty = computed(() => {
   return !isEqual(originalData.value, editableData.value);
 });
 
+const formattedVidas = computed(() => {
+  if (!editableData.value || !editableData.value.vidas || editableData.value.vidas.length === 0) {
+    return 'N/A';
+  }
+
+  // Caso especial para Pessoa Jurídica (idade 99)
+  if (editableData.value.vidas.length === 1 && editableData.value.vidas[0].idade === 99) {
+    return 'N/A (Pessoa Jurídica)';
+  }
+
+  return editableData.value.vidas.map(v => v.idade).join(', ');
+});
+
 const resetFormState = () => {
   saveError.value = null;
   saveSuccess.value = false;
@@ -193,9 +206,10 @@ const formatStatus = (status) => {
               <div class="info-item"><label>CPF/CNPJ</label><span>{{ editableData.cpf || editableData.cnpj || 'N/A' }}</span></div>
               <div class="info-item"><label>Cidade</label><span>{{ editableData.cidade || 'N/A' }}</span></div>
               <div class="info-item"><label>UF</label><span>{{ editableData.uf || 'N/A' }}</span></div>
-              <div class="info-item"><label>Vidas</label><span>{{ editableData.vidas.length }}</span></div>
+              <div class="info-item"><label>Qtd. Vidas</label><span>{{ editableData.vidas.length }}</span></div>
+              <div class="info-item"><label>Idade das Vidas</label><span>{{ formattedVidas }}</span></div>
               <div class="info-item"><label>Cobertura</label><span>{{ editableData.cobertura }}</span></div>
-              <div class="info-item"><label>Parceiro</label><span>{{ editableData.parceiro_id || 'SEM_REF' }}</span></div>
+              <div class="info-item"><label>Parceiro</label><span>{{ editableData.parceiro.nome || 'Sem nome' }}</span></div>
               <div class="info-item"><label>Criado em</label><span>{{ formatDate(editableData.created_at) }}</span></div>
             </div>
           </section>
