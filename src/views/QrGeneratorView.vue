@@ -1,7 +1,10 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import QRCode from 'qrcode'
-import CartazTemplateA from '../components/CartazTemplate.vue' // Renomeado para o novo
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import CartazPreview from '../components/CartazPreview.vue';
+import CartazModal from '../components/CartazModal.vue';
 import PartnerCard from '../components/PartnerCard.vue'
 import BulkGenerationModal from '../components/BulkGenerationModal.vue'
 import AssociarCartaoModal from '../components/AssociarCartaoModal.vue'
@@ -35,6 +38,7 @@ const modalAddPartnerOpen = ref(false)
 const modalBulkOpen = ref(false)
 const isSavingBulk = ref(false)
 const modalAssociateOpen = ref(false)
+const isPrinting = ref(false)
 const isSavingAssociation = ref(false)
 const modalSolicitacoesOpen = ref(false)
 const modalOperadorOpen = ref(false)
@@ -44,6 +48,19 @@ const selectedPartnerSolicitacoes = ref([])
 const qrDataUrl = ref('')
 const qrUrlText = ref('')
 
+// Estrutura de templates de cartaz
+const posterTemplates = {
+  modelo001: {
+    name: 'Modelo Padrão 01',
+    image: '/cartazes/modelo-cartaz-001.png',
+    qr: {
+      leftPercent: 0.375, // Posição horizontal em %
+      topPercent: 0.49,   // Posição vertical em %
+      sizePercent: 0.25   // Largura em % relativo à largura do cartaz
+    }
+  }
+};
+const selectedTemplate = ref(posterTemplates.modelo001);
 // Formulário de Novo Parceiro
 const newPartner = ref({
   nome: '',
@@ -227,169 +244,45 @@ const handleDownloadQr = async (partner) => {
 }
 
 const handleGeneratePoster = async (partner) => {
-  selectedPartner.value = partner
-  qrUrlText.value = generateQrUrl(partner.id)
-  try {
-    qrDataUrl.value = await QRCode.toDataURL(qrUrlText.value, { 
-      width: 600, 
-      margin: 1,
-      color: { dark: '#1f2937', light: '#ffffff' }
-    })
-    modalPosterOpen.value = true
-  } catch (err) {
-    console.error('Erro ao gerar Poster', err)
+  selectedPartner.value = partner;
+  modalPosterOpen.value = true;
+};
+
+const downloadPoster = async () => {
+  if (isPrinting.value) return;
+  isPrinting.value = true;
+
+  // Usa um seletor mais específico para o conteúdo dentro do modal
+  const wrapper = document.getElementById('poster-preview-content-wrapper');
+  const element = wrapper ? wrapper.firstChild : null;
+
+  if (!element) {
+    console.error("Elemento do cartaz não encontrado para impressão.");
+    isPrinting.value = false;
+    return;
   }
-}
 
-const downloadPoster = () => {
-  if (!selectedPartner.value) return;
-  
-  const canvas = document.createElement('canvas');
-  canvas.width = 1080;
-  canvas.height = 1920; // A4 aspect ratio approx.
-  const ctx = canvas.getContext('2d');
-  
-  // Cores
-  const colorGreen = '#008445';
-  const colorDark = '#0a1c2e';
-  const colorWhite = '#ffffff';
-  const colorGray = '#f3f4f6';
-  const colorTextGray = '#4B5563';
+  try {
+    const canvas = await html2canvas(element, {
+      useCORS: true,
+      scale: 3, // Aumenta a resolução para melhor qualidade de impressão
+    });
 
-  // Helper para Retângulo Arredondado
-  const roundRect = (x, y, w, h, r) => {
-    if (w < 2 * r) r = w / 2;
-    if (h < 2 * r) r = h / 2;
-    ctx.beginPath();
-    ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r);
-    ctx.arcTo(x, y, x + w, y, r);
-    ctx.closePath();
-    return ctx;
-  };
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
 
-  // 1. Fundo branco
-  ctx.fillStyle = colorWhite;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Imagem de fundo (simulada com um gradiente para o exemplo)
-  const headerImg = new Image();
-  headerImg.onload = () => {
-    ctx.drawImage(headerImg, 0, 0, canvas.width, 672); // 35% of 1920
-    
-    // Degradê sobre a imagem
-    const gradient = ctx.createLinearGradient(0, 470, 0, 672);
-    gradient.addColorStop(0, 'rgba(255,255,255,0)');
-    gradient.addColorStop(0.4, 'rgba(255,255,255,0.15)');
-    gradient.addColorStop(0.65, 'rgba(255,255,255,0.45)');
-    gradient.addColorStop(0.85, 'rgba(255,255,255,0.80)');
-    gradient.addColorStop(1, 'rgba(255,255,255,1)');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 470, canvas.width, 202);
-
-    // Título
-    ctx.textAlign = 'center';
-    ctx.fillStyle = colorGreen;
-    ctx.font = 'bold 54px Roboto, sans-serif';
-    ctx.fillText('ECONOMIZE', canvas.width / 2, 650);
-    ctx.font = '900 115px Oswald, sans-serif';
-    ctx.fillText('NO SEU PLANO', canvas.width / 2, 760);
-    ctx.fillText('DE SAÚDE', canvas.width / 2, 870);
-
-    // CTA Simulação
-    ctx.font = 'bold 42px Roboto, sans-serif';
-    ctx.fillStyle = colorDark;
-    ctx.fillText('FAÇA UMA SIMULAÇÃO GRATUITA EM 1 MINUTO', canvas.width / 2, 950);
-
-    // Seção QR Code
-    ctx.font = '900 40px Roboto, sans-serif';
-    ctx.fillStyle = colorGreen;
-    ctx.textAlign = 'right';
-    ctx.fillText('APONTE A CÂMERA', 280, 1080);
-    ctx.fillText('E ESCANEIE', 280, 1130);
-    ctx.textAlign = 'left';
-    ctx.fillText('É RÁPIDO', 800, 1080);
-    ctx.fillText('E SEGURO', 800, 1130);
-
-    // Benefícios
-    drawBenefit(210, 'SEM BUROCRACIA');
-    drawBenefit(540, 'PLANOS INDIVIDUAIS E FAMILIARES');
-    drawBenefit(870, 'AS MELHORES OPERADORAS');
-
-    // Selo Parceiro
-    ctx.fillStyle = colorGray;
-    roundRect(80, 1500, canvas.width - 160, 120, 20).fill();
-    ctx.font = '500 28px Roboto, sans-serif';
-    ctx.fillStyle = colorTextGray;
-    ctx.textAlign = 'left';
-    ctx.fillText('PARCEIRO CREDENCIADO:', 120, 1545);
-    ctx.font = 'bold 40px Roboto, sans-serif';
-    ctx.fillStyle = colorDark;
-    ctx.fillText(`${selectedPartner.value.nome} - ${selectedPartner.value.id.slice(0, 8)}`, 120, 1595);
-
-    // Código do Cartão
-    ctx.font = '500 28px Roboto, sans-serif';
-    ctx.fillStyle = colorTextGray;
-    ctx.textAlign = 'right';
-    ctx.fillText('CÓDIGO DO CARTÃO:', canvas.width - 120, 1545);
-    ctx.font = 'bold 40px Roboto, sans-serif';
-    ctx.fillStyle = colorDark;
-    ctx.fillText(selectedPartner.value.id.slice(5).toUpperCase(), canvas.width - 120, 1595);
-
-    // Rodapé Logos
-    ctx.font = 'bold 28px Roboto, sans-serif';
-    ctx.fillStyle = colorTextGray;
-    ctx.textAlign = 'center';
-    ctx.fillText('OPERADORAS PARCEIRAS', canvas.width / 2, 1700);
-    // Aqui viria o código para desenhar os logos...
-
-    // Desenhar QR Code por último
-    const qrImg = new Image();
-    qrImg.onload = () => {
-      const qrBoxSize = 320;
-      const qrBoxX = (canvas.width - qrBoxSize) / 2;
-      const qrBoxY = 1000;
-      ctx.fillStyle = colorWhite;
-      ctx.strokeStyle = colorGreen;
-      ctx.lineWidth = 8;
-      roundRect(qrBoxX, qrBoxY, qrBoxSize, qrBoxSize, 30).fill();
-      roundRect(qrBoxX, qrBoxY, qrBoxSize, qrBoxSize, 30).stroke();
-      ctx.drawImage(qrImg, qrBoxX + 20, qrBoxY + 20, qrBoxSize - 40, qrBoxSize - 40);
-
-      // Download
-      const a = document.createElement('a');
-      a.href = canvas.toDataURL('image/png');
-      a.download = `cartaz_${selectedPartner.value.id}.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    };
-    qrImg.src = qrDataUrl.value;
-  };
-  headerImg.src = '/lp-header.jpg'; // Caminho da imagem de fundo
-
-  const drawBenefit = (x, text) => {
-    ctx.fillStyle = colorGreen;
-    ctx.beginPath();
-    ctx.arc(x, 1400, 45, 0, Math.PI * 2);
-    ctx.fill();
-    // Ícone (simulado)
-    ctx.fillStyle = colorWhite;
-    ctx.font = 'bold 40px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('✓', x, 1415);
-
-    ctx.fillStyle = colorDark;
-    ctx.font = 'bold 28px Roboto, sans-serif';
-    const lines = text.split(' ');
-    if (lines.length > 2) {
-      ctx.fillText(lines.slice(0, 2).join(' '), x, 1480);
-      ctx.fillText(lines.slice(2).join(' '), x, 1510);
-    } else {
-      ctx.fillText(text, x, 1480);
-    }
-  };
-}
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`cartaz_${selectedPartner.value.id}.pdf`);
+  } catch (error) {
+    console.error("Erro ao gerar PDF:", error);
+    showAlert('Erro', 'Ocorreu um erro ao gerar o PDF.', 'error');
+  } finally {
+    isPrinting.value = false;
+    closeModal(); // Fecha o modal após a impressão
+  }
+};
 
 const handleAddPartner = () => {
   newPartner.value = {
@@ -594,6 +487,8 @@ const closeModal = () => {
           v-for="partner in partners" 
           :key="partner.id" 
           :partner="partner"
+          :template="selectedTemplate"
+          :is-printing="isPrinting"
           @generate="handleGenerateQr"
           @download="handleDownloadQr"
           @poster="handleGeneratePoster"
@@ -641,37 +536,14 @@ const closeModal = () => {
 
     <!-- Modal Cartaz (Poster) -->
     <Teleport to="body">
-      <Transition name="fade">
-        <div v-if="modalPosterOpen" class="modal-overlay" @click.self="closeModal">
-          <div class="modal-content modal-lg">
-            <div class="modal-header">
-              <h2>Visualização do Cartaz</h2>
-              <button class="close-btn" @click="closeModal">&times;</button>
-            </div>
-            
-            <div class="modal-body bg-gray">
-              <div class="poster-preview">
-                <!-- O novo componente de cartaz será renderizado aqui -->
-                <CartazTemplateA
-                  v-if="selectedPartner"
-                  :qr-code-url="qrUrlText"
-                  :partner-name="selectedPartner.nome"
-                  :partner-code="selectedPartner.id.slice(0, 8)"
-                  :partner-id="selectedPartner.id"
-                />
-              </div>
-            </div>
-
-            <div class="modal-footer">
-              <button class="btn-cancel" @click="closeModal">Cancelar</button>
-              <button class="btn-success" @click="downloadPoster">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                Baixar Cartaz (PNG)
-              </button>
-            </div>
-          </div>
-        </div>
-      </Transition>
+      <!-- O PartnerCard agora controla a abertura do CartazModal.
+           A lógica do modal foi movida para o componente CartazModal.vue
+           e a lógica de impressão é acionada pelo evento @poster.
+           O botão de gerar cartaz no PartnerCard agora abre o modal,
+           e o botão de imprimir dentro do modal dispara a função `downloadPoster`
+           neste componente pai.
+      -->
+      <CartazModal :open="modalPosterOpen" :partner="selectedPartner" :template="selectedTemplate" :is-printing="isPrinting" @close="closeModal" @print="downloadPoster" />
     </Teleport>
 
     <!-- Modal Solicitações -->
@@ -1266,249 +1138,12 @@ const closeModal = () => {
 .poster-preview {
   display: flex;
   justify-content: center;
-  padding: 10px 0;
-  transform: scale(0.85); /* Scale down to fit modal */
+  padding: 20px;
+  /* Simula uma folha A4 em modo retrato para preview */
+  width: 210mm;
+  height: 297mm;
+  transform: scale(0.3); /* Ajusta o tamanho para caber no modal */
   transform-origin: top center;
-}
-
-.poster-card {
-  width: 400px;
-  height: 560px;
-  background: #008445;
-  border-radius: 24px;
-  padding: 12px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-}
-
-.poster-inner {
-  width: 100%;
-  height: 100%;
-  background: white;
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 16px;
-  box-sizing: border-box;
-  position: relative;
-  overflow: hidden;
-}
-
-.poster-header {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-}
-
-.shield-plus {
-  color: #008445;
-  width: 32px;
-  height: 32px;
-}
-
-.poster-title {
-  margin: 0;
-  color: #008445;
-  font-size: 1.5rem;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: -0.02em;
-}
-
-.whatsapp-pill {
-  background: #008445;
-  color: white;
-  padding: 6px 16px;
-  border-radius: 100px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 4px;
-}
-
-.whatsapp-pill svg {
-  width: 14px;
-  height: 14px;
-}
-
-.poster-features {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: 16px;
-  padding: 0 8px;
-}
-
-.p-feature {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: 1;
-}
-
-.f-icon {
-  width: 24px;
-  height: 24px;
-  background: #008445;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  flex-shrink: 0;
-}
-
-.f-icon svg {
-  width: 14px;
-  height: 14px;
-}
-
-.f-text {
-  font-size: 0.45rem;
-  font-weight: 800;
-  line-height: 1.1;
-  color: #0a1c2e;
-}
-
-.poster-qr-section {
-  margin-top: 16px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-.qr-white-box {
-  background: white;
-  padding: 12px;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 2;
-  position: relative;
-}
-
-.qr-white-box img {
-  width: 120px;
-  height: 120px;
-}
-
-.scan-pill {
-  background: #0a1c2e;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 100px;
-  font-size: 0.55rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: -10px;
-  position: relative;
-  z-index: 3;
-}
-
-.scan-pill svg {
-  width: 10px;
-  height: 10px;
-}
-
-.qr-arrow {
-  position: absolute;
-  left: 20%;
-  bottom: 0;
-  width: 40px;
-  height: 40px;
-  transform: rotate(-45deg);
-}
-
-.poster-partner-box {
-  margin-top: 16px;
-  background: #e6f4ea;
-  border-radius: 12px;
-  width: 100%;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-sizing: border-box;
-}
-
-.partner-car-icon {
-  width: 36px;
-  height: 36px;
-  background: #008445;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.partner-car-icon svg {
-  width: 20px;
-  height: 20px;
-}
-
-.partner-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.partner-label {
-  font-size: 0.5rem;
-  font-weight: 700;
-  color: #008445;
-}
-
-.partner-name {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 800;
-  color: #0a1c2e;
-}
-
-.poster-footer-features {
-  margin-top: auto;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 8px 0;
-  border-top: 1px solid #f3f4f6;
-}
-
-.pf-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-  justify-content: center;
-}
-
-.pf-item svg {
-  width: 16px;
-  height: 16px;
-  color: #008445;
-}
-
-.pf-item span {
-  font-size: 0.4rem;
-  font-weight: 700;
-  color: #0a1c2e;
-  line-height: 1.1;
-}
-
-.border-left {
-  border-left: 1px solid #f3f4f6;
 }
 
 /* Animations */
@@ -2036,7 +1671,7 @@ const closeModal = () => {
 }
 
 .modal-lg {
-  max-width: 600px;
+  max-width: 800px; /* Aumentado para o novo layout do cartaz */
 }
 
 .modal-header {

@@ -1,21 +1,25 @@
 <script setup>
 import { ref, computed } from 'vue';
-import CartazModal from './CartazModal.vue';
 import { useAlert } from '@/services/useAlert';
 
 const props = defineProps({
   partner: {
     type: Object,
     required: true
-  }
+  },
+  template: {
+    type: Object,
+    required: true,
+  },
+  isPrinting: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const emit = defineEmits(['generate', 'download', 'view-solicitacoes', 'associate-card']);
+const emit = defineEmits(['generate', 'download', 'poster', 'view-solicitacoes', 'associate-card']);
 
 const { showAlert } = useAlert();
-
-const isCartazModalOpen = ref(false);
-const selectedPartnerForCartaz = ref(null);
 
 const isAvailable = computed(() => props.partner.status_cartao !== 'EM_USO');
 const cardStatus = computed(() => isAvailable.value ? 'Disponível' : 'Em uso');
@@ -31,23 +35,11 @@ const handleGerarCartaz = () => {
     );
     return;
   }
-  selectedPartnerForCartaz.value = props.partner;
-  isCartazModalOpen.value = true;
-};
-
-const closeCartazModal = () => {
-  isCartazModalOpen.value = false;
-  selectedPartnerForCartaz.value = null;
+  emit('poster', props.partner);
 };
 </script>
 
 <template>
-  <CartazModal 
-    :open="isCartazModalOpen" 
-    :partner="selectedPartnerForCartaz"
-    @close="closeCartazModal()"
-  />
-
   <div class="partner-card">
     <div class="card-header">
       <div class="avatar">
