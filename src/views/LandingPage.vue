@@ -1,11 +1,8 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import SolicitacaoModal from '../components/SolicitacaoModal.vue'
-import SuccessModal from '../components/SuccessModal.vue'
 
 const isSolicitacaoModalOpen = ref(false)
-const isSuccessModalOpen = ref(false)
-const protocolo = ref('')
 const parceiroRef = ref("SEM_REF")
 
 onMounted(() => {
@@ -22,12 +19,6 @@ onMounted(() => {
     }
   }
 })
-
-const handleSolicitationSuccess = (p) => {
-  isSolicitacaoModalOpen.value = false;
-  protocolo.value = p;
-  isSuccessModalOpen.value = true;
-}
 </script>
 
 <template>
@@ -75,13 +66,6 @@ const handleSolicitationSuccess = (p) => {
         <SolicitacaoModal 
           :isOpen="isSolicitacaoModalOpen" 
           @close="isSolicitacaoModalOpen = false"
-          @solicitation-success="handleSolicitationSuccess"
-        />
-
-        <SuccessModal 
-          :isOpen="isSuccessModalOpen"
-          :protocol="protocolo"
-          @close="isSuccessModalOpen = false"
         />
 
         <!-- Lista de Benefícios Atualizada -->

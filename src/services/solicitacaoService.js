@@ -57,6 +57,15 @@ const buscarHistorico = (id) => {
   return api.get(`${URI}/${id}/historico`);
 };
 
+/**
+ * Starts the WhatsApp attendance flow by creating a solicitation and returning a WhatsApp URL.
+ * @param {object} dados - The solicitation data.
+ * @returns {Promise<any>}
+ */
+const iniciarAtendimentoWhatsApp = (dados) => {
+  return api.post(`${URI}/iniciar-atendimento-whatsapp`, dados);
+};
+
 export const solicitacaoService = {
   listar,
   buscar,
@@ -64,4 +73,5 @@ export const solicitacaoService = {
   alterarStatus,
   atualizarDadosComerciais,
   buscarHistorico,
+  iniciarAtendimentoWhatsApp,
 };

@@ -167,10 +167,29 @@ const handleSubmit = async () => {
   }
 
   try {
-    const result = await solicitacaoService.criar(payload);
-    emit('solicitation-success', result.protocolo);
+    const response = await solicitacaoService.iniciarAtendimentoWhatsApp(payload);
+    if (response.data?.whatsapp_url) {
+      window.location.href = response.data.whatsapp_url;
+    } else {
+      // Fallback caso a API retorne sucesso mas sem a URL
+      error.value = "Não foi possível obter a URL para o atendimento. Tente novamente.";
+    }
   } catch (err) {
-    error.value = err.message;
+    if (err.response) {
+      switch (err.response.status) {
+        case 404:
+          error.value = "Parceiro de referência não encontrado. Verifique o link de acesso.";
+          break;
+        case 422:
+          error.value = err.response.data.message || "Erro de validação. Verifique os dados informados.";
+          break;
+        default:
+          error.value = "Ocorreu um problema. Por favor, tente novamente mais tarde.";
+      }
+    } else {
+      // Erro de rede ou CORS
+      error.value = "Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.";
+    }
   } finally {
     loading.value = false;
   }
