@@ -62,7 +62,7 @@ const handleClose = () => {
       <div v-if="open" class="modal-overlay" @click.self="handleClose">
         <div class="modal-content">
           <div class="modal-header">
-            <h2>Gerar cartões em lote</h2>
+            <h2>Lote de cartões</h2>
             <button class="close-btn" @click="handleClose" :disabled="isSaving">&times;</button>
           </div>
           
