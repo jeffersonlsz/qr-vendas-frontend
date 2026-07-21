@@ -1,90 +1,34 @@
-const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/v1';
+import axios from 'axios';
 
-/**
- * Encapsulates the logic for making HTTP requests using the native fetch API.
- * @param {string} endpoint - The API endpoint to call.
- * @param {RequestInit} options - The options for the fetch request.
- * @returns {Promise<any>} - A promise that resolves to the JSON response.
- * @throws {Error} - Throws an error if the network response is not ok.
- */
-async function request(endpoint, options = {}) {
-  const url = `${BASE_URL}${endpoint}`;
-  
-  const defaultHeaders = {
+// 1. Cria uma instância do axios com a configuração base da API.
+const apiHost = (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:8000')
+  .replace(/\/+$/, '');
+const apiPrefix = '/api/v1';
+const baseURL = apiHost.endsWith(apiPrefix) ? apiHost : `${apiHost}${apiPrefix}`;
+
+const apiClient = axios.create({
+  baseURL,
+  headers: {
     'Content-Type': 'application/json',
-  };
+    'Accept': 'application/json',
+  },
+});
 
-  const config = {
-    ...options,
-    headers: {
-      ...defaultHeaders,
-      ...options.headers,
-    },
-  };
+console.log('[API] baseURL set to:', baseURL);
 
-  try {
-    const response = await fetch(url, config);
-    if (!response.ok) {
-      // Try to parse the error body for a more descriptive message
-      const errorData = await response.json().catch(() => null);
-      const errorMessage = errorData?.message || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
-    // Workaround for hanging spinner: avoid parsing body for status updates
-    if (endpoint.includes('/status') && config.method === 'PATCH') {
-      return null;
-    }
-
-    // Handle cases with no content
-    if (response.status === 204) {
-      return null;
-    }
-    return response.json();
-  } catch (error) {
-    console.error(`API request failed: ${error.message}`);
-    throw error; // Re-throw the error to be caught by the caller
+// 2. (Opcional, mas recomendado) Adiciona um interceptor para tratar respostas.
+//    Isso ajuda a padronizar o retorno dos dados.
+apiClient.interceptors.response.use(
+  (response) => {
+    // Retorna o payload completo do backend, preservando wrappers do tipo
+    // { success: true, data: [...] } para que os componentes possam acessar
+    // success e data normalmente.
+    return response.data;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-}
+);
 
-async function requestDownload(endpoint, options = {}) {
-  const url = `${BASE_URL}${endpoint}`;
-
-  const config = {
-    ...options,
-    headers: {
-      ...options.headers,
-    },
-  };
-
-  const response = await fetch(url, config);
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => null);
-    const errorMessage = errorData?.message || `HTTP error! status: ${response.status}`;
-    throw new Error(errorMessage);
-  }
-
-  return response;
-}
-
-export const api = {
-  get(endpoint, options) {
-    return request(endpoint, { ...options, method: 'GET' });
-  },
-  post(endpoint, body, options) {
-    return request(endpoint, { ...options, method: 'POST', body: JSON.stringify(body) });
-  },
-  patch(endpoint, body, options) {
-    return request(endpoint, { ...options, method: 'PATCH', body: JSON.stringify(body) });
-  },
-  put(endpoint, body, options) {
-    return request(endpoint, { ...options, method: 'PUT', body: JSON.stringify(body) });
-  },
-  delete(endpoint, options) {
-    return request(endpoint, { ...options, method: 'DELETE' });
-  },
-  download(endpoint, options) {
-    return requestDownload(endpoint, { ...options, method: 'GET' });
-  }
-};
+export const api = apiClient;
+export default apiClient;

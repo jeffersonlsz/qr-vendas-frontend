@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import QRCode from 'qrcode'
+                              
+import modeloCartaz001 from '/src/assets/cartazes/modelo-cartaz-001.png';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import CartazPreview from '../components/CartazPreview.vue';
@@ -15,6 +17,7 @@ import { operadorService } from '../services/operadorService'
 import { useAlert } from '@/services/useAlert'
 
 // Estado
+const isSavingLayout = ref(false);
 const partners = ref([])
 const operadores = ref([])
 const loading = ref(false)
@@ -52,12 +55,19 @@ const qrUrlText = ref('')
 const posterTemplates = {
   modelo001: {
     name: 'Modelo Padrão 01',
+    id: 'modelo-cartaz-001.png', // ID para referência no backend
     image: '/cartazes/modelo-cartaz-001.png',
-    qr: {
-      leftPercent: 0.375, // Posição horizontal em %
-      topPercent: 0.49,   // Posição vertical em %
-      sizePercent: 0.25   // Largura em % relativo à largura do cartaz
-    }
+    image: modeloCartaz001,
+    layout: {
+      version: 1,
+      elements: {
+        qr: {
+          leftPercent: 0.375, // Posição horizontal em %
+          topPercent: 0.49,   // Posição vertical em %
+          sizePercent: 0.25   // Largura em % relativo à largura do cartaz
+        }
+      }
+    },
   }
 };
 const selectedTemplate = ref(posterTemplates.modelo001);
@@ -398,6 +408,25 @@ const handleSaveOperador = async (formData) => {
   }
 }
 
+const handleSaveLayout = async ({ templateId, layout }) => {
+  console.log('Recebido evento para salvar layout:', { templateId, layout });
+  isSavingLayout.value = true;
+  try {
+    // Importar o templateService
+    const { templateService } = await import('../services/templateService');
+    const response = await templateService.saveLayout(templateId, layout);
+    
+    // A resposta pode não ter um campo 'success', então verificamos a existência da resposta
+    if (response) {
+      showAlert('Sucesso', 'Layout do template salvo com sucesso!', 'success');
+    }
+  } catch (error) {
+    showAlert('Erro', 'Não foi possível salvar o layout do template.', 'error');
+  } finally {
+    isSavingLayout.value = false;
+  }
+};
+
 const closeModal = () => {
   modalQrOpen.value = false
   modalPosterOpen.value = false
@@ -543,7 +572,14 @@ const closeModal = () => {
            e o botão de imprimir dentro do modal dispara a função `downloadPoster`
            neste componente pai.
       -->
-      <CartazModal :open="modalPosterOpen" :partner="selectedPartner" :template="selectedTemplate" :is-printing="isPrinting" @close="closeModal" @print="downloadPoster" />
+      <CartazModal 
+        :open="modalPosterOpen" 
+        :partner="selectedPartner" 
+        :template="selectedTemplate" 
+        :is-printing="isPrinting" 
+        @close="closeModal" 
+        @print="downloadPoster"
+        @save-layout="handleSaveLayout" />
     </Teleport>
 
     <!-- Modal Solicitações -->

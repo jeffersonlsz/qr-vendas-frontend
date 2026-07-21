@@ -21,13 +21,15 @@ const emit = defineEmits(['update:template']);
 
 const containerRef = ref(null);
 const qrCodeCanvas = ref(null);
-const originalTemplate = JSON.parse(JSON.stringify(props.template));
+
+// A estrutura agora pode ser { layout: { elements: { qr: ... } } }
+const originalTemplate = JSON.parse(JSON.stringify(props.template.layout?.elements || props.template.elements || {}));
 
 // --- Lógica de Elementos Editáveis ---
 const elements = reactive({
   qr: {
     id: 'qr',
-    ...props.template.qr,
+    ...(props.template.layout?.elements?.qr || props.template.elements?.qr || {}),
     isDragging: false,
     isResizing: false,
     dragOffsetX: 0,
@@ -143,24 +145,30 @@ const stopResize = () => {
 };
 
 const emitUpdate = () => {
-  emit('update:template', { qr: { ...elements.qr } });
+  // Emite a estrutura completa para ser compatível com o novo formato
+  emit('update:template', { elements: { qr: { ...elements.qr } } });
 };
 
 const resetPosition = () => {
+  // Acessa a configuração original do QR dentro de 'elements'
   Object.assign(elements.qr, originalTemplate.qr);
   emitUpdate();
 };
 
 const copyConfig = () => {
+  // Monta o objeto completo para ser copiado
   const config = {
-    qr: {
-      leftPercent: parseFloat(elements.qr.leftPercent.toFixed(4)),
-      topPercent: parseFloat(elements.qr.topPercent.toFixed(4)),
-      sizePercent: parseFloat(elements.qr.sizePercent.toFixed(4)),
+    version: 1,
+    elements: {
+      qr: {
+        leftPercent: parseFloat(elements.qr.leftPercent.toFixed(4)),
+        topPercent: parseFloat(elements.qr.topPercent.toFixed(4)),
+        sizePercent: parseFloat(elements.qr.sizePercent.toFixed(4)),
+      }
     }
   };
   navigator.clipboard.writeText(JSON.stringify(config, null, 2));
-  alert('Configuração copiada para a área de transferência!');
+  alert('Configuração de layout copiada para a área de transferência!');
 };
 
 const generateQRCode = async () => {
@@ -191,7 +199,7 @@ onMounted(generateQRCode);
 
 <template>
   <div class="poster-preview-container" ref="containerRef">
-    <img :src="template.image" alt="Template do Cartaz" class="background-image" />
+    <img :src="template.image" alt="Template do Cartaz" class="background-image" /> <!-- template.image ainda é passado no objeto geral -->
 
     <!-- Elemento Editável (QR Code) -->
     <div 
@@ -212,7 +220,6 @@ onMounted(generateQRCode);
     <div v-if="editMode" class="edit-toolbar">
       <button @click="resetPosition" title="Resetar Posição">↺</button>
       <button @click="copyConfig" title="Copiar Configuração">📋</button>
-      <button @click="$emit('update:template', { qr: { ...elements.qr } })" class="btn-save" title="Salvar em memória">Salvar</button>
     </div>
   </div>
 </template>

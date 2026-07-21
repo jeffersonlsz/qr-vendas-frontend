@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted, reactive } from 'vue';
 import CartazPreview from './CartazPreview.vue';
+import { templateService } from '../services/templateService';
 
 const props = defineProps({
   open: {
@@ -21,7 +22,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['close', 'print']);
+const emit = defineEmits(['close', 'print', 'save-layout']);
 
 const cartazData = computed(() => {
   if (!props.partner) return null;
@@ -34,11 +35,12 @@ const cartazData = computed(() => {
 
 // --- Lógica do Modo de Edição de Template ---
 const editMode = ref(false);
-const editedTemplate = reactive({ qr: {} });
+const loadingLayout = ref(false);
+const editedTemplate = reactive({ layout: { elements: { qr: {} } } });
 
 const handleTemplateUpdate = (newConfig) => {
   // Atualiza a configuração do template em memória
-  Object.assign(editedTemplate.qr, newConfig.qr);
+  Object.assign(editedTemplate.layout.elements, newConfig.elements);
 };
 
 // --- Lógica de Escala Dinâmica ---
@@ -62,14 +64,34 @@ const calculateScale = () => {
   }
 };
 
-watch(() => props.open, (isOpen) => {
+watch(() => props.open, async (isOpen) => {
   if (isOpen) {
     // Recalcula a escala na próxima renderização do DOM, quando o modal estiver visível
     // Reseta o modo de edição e as edições temporárias ao abrir
     editMode.value = false;
+    loadingLayout.value = true;
+    // 1. Define o layout de fallback imediatamente
     Object.assign(editedTemplate, JSON.parse(JSON.stringify(props.template)));
 
     setTimeout(calculateScale, 50); // Pequeno delay para garantir que o DOM foi renderizado
+    // 2. Tenta buscar o layout salvo no backend
+    try {
+      const savedLayout = await templateService.getLayout(props.template.id);
+      if (savedLayout && savedLayout.elements) {
+        console.log("Layout customizado carregado do backend.", savedLayout);
+        // Mescla o layout salvo sobre o template padrão
+        Object.assign(editedTemplate.layout, savedLayout);
+      }
+    } catch (error) {
+      // Se der 404 ou outro erro, o fallback já está em uso. Não é necessário fazer nada.
+      if (error.response && error.response.status !== 404) {
+        console.error("Erro ao buscar layout do template:", error);
+      }
+    } finally {
+      loadingLayout.value = false;
+    }
+
+    setTimeout(calculateScale, 50);
   }
 });
 
@@ -95,6 +117,19 @@ const handleClose = () => {
 const handlePrint = () => {
   emit('print');
 };
+
+const handleExitEditMode = () => {
+  // 1. Capturar as coordenadas atuais do QR.
+  // 2. Montar o objeto de layout.
+  const newLayout = {
+    version: 1, // ou props.template.layout.version
+    elements: JSON.parse(JSON.stringify(editedTemplate.layout.elements))
+  };
+
+  // 3. Enviar o objeto para o componente pai persistir
+  emit('save-layout', { templateId: props.template.id, layout: newLayout });
+  editMode.value = false;
+}
 </script>
 
 <template>
@@ -129,8 +164,13 @@ const handlePrint = () => {
                       id="poster-preview-content-wrapper"
                       :style="{ transform: `scale(${posterScale})` }"
                     >
+                      <div v-if="loadingLayout" class="layout-loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Carregando layout...</p>
+                      </div>
+
                       <CartazPreview
-                        v-if="partner && cartazData"
+                        v-else-if="partner && cartazData"
                         :template="editedTemplate"
                         :qr-code-url="cartazData.qrCodeUrl"
                         :edit-mode="editMode"
@@ -174,15 +214,15 @@ const handlePrint = () => {
                   
                   <div class="info-card">
                     <span class="info-label">Posição Horizontal (X)</span>
-                    <span class="info-value monospace">{{ (editedTemplate.qr.leftPercent * 100).toFixed(2) }}%</span>
+                    <span class="info-value monospace">{{ (editedTemplate.layout.elements.qr.leftPercent * 100).toFixed(2) }}%</span>
                   </div>
                   <div class="info-card">
                     <span class="info-label">Posição Vertical (Y)</span>
-                    <span class="info-value monospace">{{ (editedTemplate.qr.topPercent * 100).toFixed(2) }}%</span>
+                    <span class="info-value monospace">{{ (editedTemplate.layout.elements.qr.topPercent * 100).toFixed(2) }}%</span>
                   </div>
                   <div class="info-card">
                     <span class="info-label">Largura</span>
-                    <span class="info-value monospace">{{ (editedTemplate.qr.sizePercent * 100).toFixed(2) }}%</span>
+                    <span class="info-value monospace">{{ (editedTemplate.layout.elements.qr.sizePercent * 100).toFixed(2) }}%</span>
                   </div>
                 </div>
 
@@ -202,7 +242,7 @@ const handlePrint = () => {
                 <span>•</span>
                 <span>Pronto para impressão</span>
               </div>
-              <button class="btn btn-text" @click="editMode = !editMode">
+              <button class="btn btn-text" @click="editMode ? handleExitEditMode() : (editMode = true)">
                 {{ editMode ? 'Sair do Modo de Ajuste' : 'Modo de Ajuste' }}
               </button>
               <div class="footer-actions">
@@ -476,6 +516,36 @@ const handlePrint = () => {
   0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; }
   50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
   100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
+}
+
+.layout-loading-state {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid rgba(16, 185, 129, 0.2);
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* --- Responsividade --- */
