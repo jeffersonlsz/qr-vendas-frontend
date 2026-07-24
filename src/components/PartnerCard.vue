@@ -50,8 +50,8 @@ const handleGerarCartaz = () => {
           {{ partner.nome }}
           <span :class="['status-badge', cardStatusClass]">{{ cardStatus }}</span>
         </h3>
-        <!-- <span v-if="partner.codigo_cartao" class="code-highlight">{{ partner.codigo_cartao }}</span> -->
-        <span class="badge" :class="{'secondary-id': partner.codigo_cartao}">{{ partner.id.slice(5).toUpperCase() }}</span>
+        
+        <span class="badge" :class="{'secondary-id': partner.codigo_cartao}">{{ partner.id.slice(5).toUpperCase() }} - {{ partner.codigo_cartao }} - {{ partner.operador_nome }}</span>
       </div>
     </div>
     

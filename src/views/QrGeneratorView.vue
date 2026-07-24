@@ -1,8 +1,18 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import QRCode from 'qrcode'
-                              
-import modeloCartaz001 from '/src/assets/cartazes/modelo-cartaz-001.png';
+
+import modeloCartaz001 from '@/assets/cartazes/modelo-cartaz-001.png';
+import modeloCartaz002 from '@/assets/cartazes/modelo-cartaz-002.png';
+import modeloCartaz003 from '@/assets/cartazes/modelo-cartaz-003.png';
+import modeloCartaz004 from '@/assets/cartazes/modelo-cartaz-004.png';
+
+const templateImages = {
+  'modelo-cartaz-001.png': modeloCartaz001,
+  'modelo-cartaz-002.png': modeloCartaz002,
+  'modelo-cartaz-003.png': modeloCartaz003,
+  'modelo-cartaz-004.png': modeloCartaz004,
+};
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import CartazPreview from '../components/CartazPreview.vue';
@@ -14,6 +24,7 @@ import DropdownMenu from '../components/DropdownMenu.vue'
 import OperadorModal from '../components/OperadorModal.vue'
 import { parceiroService } from '../services/parceiroService'
 import { operadorService } from '../services/operadorService'
+import { templateService } from '../services/templateService';
 import { useAlert } from '@/services/useAlert'
 
 // Estado
@@ -52,12 +63,11 @@ const qrDataUrl = ref('')
 const qrUrlText = ref('')
 
 // Estrutura de templates de cartaz
-const posterTemplates = {
-  modelo001: {
+const posterTemplates = ref([
+  {
     name: 'Modelo Padrão 01',
-    id: 'modelo-cartaz-001.png', // ID para referência no backend
-    image: '/cartazes/modelo-cartaz-001.png',
-    image: modeloCartaz001,
+    id: 'modelo-cartaz-001.png',
+    image: 'modelo-cartaz-001.png', // Apenas o nome do arquivo
     layout: {
       version: 1,
       elements: {
@@ -65,22 +75,97 @@ const posterTemplates = {
           leftPercent: 0.375, // Posição horizontal em %
           topPercent: 0.49,   // Posição vertical em %
           sizePercent: 0.25   // Largura em % relativo à largura do cartaz
-        }
+        },
+        partnerCode: {
+          leftPercent: 0.84,
+          topPercent: 0.93,
+          fontSizePercent: 0.018
+        },
+      }
+    },
+  },
+  {
+    name: 'Modelo Padrão 02',
+    id: 'modelo-cartaz-002.png',
+    image: 'modelo-cartaz-002.png', // Apenas o nome do arquivo
+    layout: {
+      version: 1,
+      elements: {
+        qr: {
+          leftPercent: 0.375,
+          topPercent: 0.49,
+          sizePercent: 0.25
+        },
+        partnerCode: {
+          leftPercent: 0.84,
+          topPercent: 0.93,
+          fontSizePercent: 0.018
+        },
+      }
+    },
+  },
+  {
+    name: 'Modelo Padrão 03',
+    id: 'modelo-cartaz-003.png',
+    image: 'modelo-cartaz-003.png', // Apenas o nome do arquivo
+    layout: {
+      version: 1,
+      elements: {
+        qr: {
+          leftPercent: 0.375,
+          topPercent: 0.49,
+          sizePercent: 0.25
+        },
+        partnerCode: {
+          leftPercent: 0.84,
+          topPercent: 0.93,
+          fontSizePercent: 0.018
+        },
+      }
+    },
+  },
+  {
+    name: 'Modelo Padrão 04',
+    id: 'modelo-cartaz-004.png',
+    image: 'modelo-cartaz-004.png', // Apenas o nome do arquivo
+    layout: {
+      version: 1,
+      elements: {
+        qr: {
+          leftPercent: 0.375,
+          topPercent: 0.49,
+          sizePercent: 0.25
+        },
+        partnerCode: {
+          leftPercent: 0.84,
+          topPercent: 0.93,
+          fontSizePercent: 0.018
+        },
       }
     },
   }
-};
-const selectedTemplate = ref(posterTemplates.modelo001);
+]);
+const selectedTemplateId = ref(posterTemplates.value[0].id);
 // Formulário de Novo Parceiro
 const newPartner = ref({
   nome: '',
   email: '',
   telefone: '',
   empresa: '',
-  operador_id: null
+  operador_id: null,
 })
 
 const isSavingPartner = ref(false)
+
+const selectedTemplate = computed(() => {
+  const template = posterTemplates.value.find(t => t.id === selectedTemplateId.value) || posterTemplates.value[0];
+  // Retorna uma cópia do template com a imagem estática importada corretamente associada
+  return {
+    ...template,
+    // Acessa o mapa de imagens para obter o asset importado
+    image: templateImages[template.image]
+  };
+});
 
 // Usa variável de ambiente para permitir acesso via rede (QR Code) e produção
 // Definir VITE_PUBLIC_URL no .env para acesso via IP local (ex: http://192.168.0.10:5173)
@@ -264,13 +349,21 @@ const downloadPoster = async () => {
 
   // Usa um seletor mais específico para o conteúdo dentro do modal
   const wrapper = document.getElementById('poster-preview-content-wrapper');
-  const element = wrapper ? wrapper.firstChild : null;
+  const element = wrapper; //?wrapper.firstChild : null;
 
   if (!element) {
     console.error("Elemento do cartaz não encontrado para impressão.");
     isPrinting.value = false;
     return;
   }
+  
+  console.log("console.log(wrapper.clientWidth, wrapper.clientHeight) -> "+wrapper.clientWidth, wrapper.clientHeight);
+  console.log("console.log(wrapper.scrollWidth, wrapper.scrollHeight) -> "+wrapper.scrollWidth, wrapper.scrollHeight);
+
+  console.log("console.log(element.clientWidth, element.clientHeight) -> "+element.clientWidth, element.clientHeight);
+  console.log(wrapper.getBoundingClientRect());
+  
+  
 
   try {
     const canvas = await html2canvas(element, {
@@ -300,7 +393,7 @@ const handleAddPartner = () => {
     email: '',
     telefone: '',
     empresa: '',
-    operador_id: null
+    operador_id: null,
   }
   modalAddPartnerOpen.value = true
 }
@@ -373,7 +466,15 @@ const savePartner = async () => {
 
   isSavingPartner.value = true
   try {
-    const json = await parceiroService.criar(newPartner.value)
+    // Transforma o payload para o formato esperado pela API
+    const payload = {
+      nome: newPartner.value.nome,
+      telefone: newPartner.value.telefone,
+      email: newPartner.value.email,
+      empresa: newPartner.value.empresa,
+      operador_id: newPartner.value.operador_id
+    }
+    const json = await parceiroService.criar(payload)
     if (json.success) {
       showAlert('Sucesso', 'Parceiro adicionado com sucesso!', 'success')
       modalAddPartnerOpen.value = false
@@ -413,7 +514,6 @@ const handleSaveLayout = async ({ templateId, layout }) => {
   isSavingLayout.value = true;
   try {
     // Importar o templateService
-    const { templateService } = await import('../services/templateService');
     const response = await templateService.saveLayout(templateId, layout);
     
     // A resposta pode não ter um campo 'success', então verificamos a existência da resposta
@@ -574,8 +674,11 @@ const closeModal = () => {
       -->
       <CartazModal 
         :open="modalPosterOpen" 
-        :partner="selectedPartner" 
-        :template="selectedTemplate" 
+        :partner="selectedPartner"
+        :template="selectedTemplate"
+        :templateImages="templateImages"
+        :templates="posterTemplates"
+        v-model:selectedTemplateId="selectedTemplateId"
         :is-printing="isPrinting" 
         @close="closeModal" 
         @print="downloadPoster"

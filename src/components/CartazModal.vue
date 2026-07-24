@@ -16,13 +16,30 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  templates: {
+    type: Array,
+    default: () => []
+  },
+  templateImages: {
+    type: Object,
+    default: () => ({})
+  },
+  selectedTemplateId: {
+    type: String,
+    default: null
+  },
   isPrinting: {
     type: Boolean,
     default: false,
   }
 });
 
-const emit = defineEmits(['close', 'print', 'save-layout']);
+const emit = defineEmits(['close', 'print', 'save-layout', 'update:selectedTemplateId']);
+
+const internalSelectedTemplateId = computed({
+  get: () => props.selectedTemplateId,
+  set: (value) => emit('update:selectedTemplateId', value)
+});
 
 const cartazData = computed(() => {
   if (!props.partner) return null;
@@ -39,8 +56,8 @@ const loadingLayout = ref(false);
 const editedTemplate = reactive({ layout: { elements: { qr: {} } } });
 
 const handleTemplateUpdate = (newConfig) => {
-  // Atualiza a configuração do template em memória
-  Object.assign(editedTemplate.layout.elements, newConfig.elements);
+  // Atualiza a configuração de um elemento específico
+  Object.assign(editedTemplate.layout.elements[newConfig.id], newConfig.data);
 };
 
 // --- Lógica de Escala Dinâmica ---
@@ -66,39 +83,71 @@ const calculateScale = () => {
 
 watch(() => props.open, async (isOpen) => {
   if (isOpen) {
-    // Recalcula a escala na próxima renderização do DOM, quando o modal estiver visível
-    // Reseta o modo de edição e as edições temporárias ao abrir
+    console.group("=== MODAL CARTAZ ABERTO ===");
+    console.log("Partner completo:", props.partner);
+    console.log("codigo_cartao:", props.partner?.codigo_cartao);
+    console.log("Template:", props.template);
+    console.log("cartazData:", cartazData.value);
+    console.groupEnd();
     editMode.value = false;
-    loadingLayout.value = true;
-    // 1. Define o layout de fallback imediatamente
-    Object.assign(editedTemplate, JSON.parse(JSON.stringify(props.template)));
-
-    setTimeout(calculateScale, 50); // Pequeno delay para garantir que o DOM foi renderizado
-    // 2. Tenta buscar o layout salvo no backend
-    try {
-      const savedLayout = await templateService.getLayout(props.template.id);
-      if (savedLayout && savedLayout.elements) {
-        console.log("Layout customizado carregado do backend.", savedLayout);
-        // Mescla o layout salvo sobre o template padrão
-        Object.assign(editedTemplate.layout, savedLayout);
-      }
-    } catch (error) {
-      // Se der 404 ou outro erro, o fallback já está em uso. Não é necessário fazer nada.
-      if (error.response && error.response.status !== 404) {
-        console.error("Erro ao buscar layout do template:", error);
-      }
-    } finally {
-      loadingLayout.value = false;
-    }
-
+    // Garante que o cálculo da escala ocorra após o modal estar visível
     setTimeout(calculateScale, 50);
+    // Carrega o layout do template selecionado ao abrir o modal
+    await fetchAndApplyLayout(props.template);
   }
 });
+
+const fetchAndApplyLayout = async (template) => {
+  loadingLayout.value = true;
+  // 1. Define o layout de fallback imediatamente
+  Object.assign(editedTemplate, JSON.parse(JSON.stringify(template)));
+  console.log("1 - Após copiar template:");
+ console.log(JSON.stringify(editedTemplate.layout.elements, null, 2));
+  try {
+    // 2. Tenta buscar o layout salvo no backend
+    console.log("Template original:", template.layout.elements);
+    const savedLayout = await templateService.getLayout(template.id);
+    
+    console.log("2 - Layout vindo do backend:");
+    console.log(JSON.stringify(savedLayout.elements, null, 2));
+    if (savedLayout && savedLayout.elements) {
+      //Object.assign(editedTemplate.layout, savedLayout);
+      editedTemplate.layout = {
+        ...editedTemplate.layout,
+        ...savedLayout,
+        elements: {
+          ...editedTemplate.layout.elements,
+          ...savedLayout.elements
+        }
+      };
+      console.log("3 - Após Object.assign:");
+      console.log(JSON.stringify(editedTemplate.layout.elements, null, 2));
+      
+    }
+  } catch (error) {
+    // Se der 404 ou outro erro, o fallback já está em uso. Não é necessário fazer nada.
+  } finally {
+    loadingLayout.value = false;
+  }
+};
 
 onMounted(() => {
   if (previewArea.value) {
     resizeObserver = new ResizeObserver(calculateScale);
     resizeObserver.observe(previewArea.value);
+  }
+});
+
+// Assiste a mudanças no template selecionado no componente pai e atualiza a cópia local.
+// Isso garante que a troca de modelo no ComboBox reflita na imagem de preview.
+watch(() => props.selectedTemplateId, async (newId, oldId) => {
+  if (newId && newId !== oldId) {
+    const baseTemplate = props.templates.find(t => t.id === newId);
+    const newTemplate = {
+      ...baseTemplate,
+      image: props.templateImages[baseTemplate.image]
+    };
+    await fetchAndApplyLayout(newTemplate);
   }
 });
 
@@ -125,7 +174,10 @@ const handleExitEditMode = () => {
     version: 1, // ou props.template.layout.version
     elements: JSON.parse(JSON.stringify(editedTemplate.layout.elements))
   };
-
+console.log(
+  "LAYOUT ENVIADO AO PAI:",
+  JSON.stringify(newLayout, null, 2)
+);
   // 3. Enviar o objeto para o componente pai persistir
   emit('save-layout', { templateId: props.template.id, layout: newLayout });
   editMode.value = false;
@@ -173,6 +225,7 @@ const handleExitEditMode = () => {
                         v-else-if="partner && cartazData"
                         :template="editedTemplate"
                         :qr-code-url="cartazData.qrCodeUrl"
+                        :partner-code="partner.codigo_cartao"
                         :edit-mode="editMode"
                         @update:template="handleTemplateUpdate"
                       />
@@ -186,8 +239,15 @@ const handleExitEditMode = () => {
                 <!-- Painel Padrão -->
                 <div v-if="!editMode">
                   <div class="info-card">
-                    <span class="info-label">Modelo</span>
-                    <span class="info-value">{{ template.name }}</span>
+                    <label for="template-select" class="info-label">Modelo</label>
+                    <select id="template-select" v-model="internalSelectedTemplateId" class="form-control-select">
+                      <option 
+                        v-for="tpl in templates" 
+                        :key="tpl.id" 
+                        :value="tpl.id">
+                        {{ tpl.name }}
+                      </option>
+                    </select>
                   </div>
                   <div class="info-card">
                     <span class="info-label">Formato</span>
@@ -211,24 +271,21 @@ const handleExitEditMode = () => {
                 <div v-if="editMode" class="edit-panel-content">
                   <h4>Ajuste de Elementos</h4>
                   <p class="edit-panel-subtitle">Arraste ou redimensione o QR Code na pré-visualização.</p>
-                  
-                  <div class="info-card">
-                    <span class="info-label">Posição Horizontal (X)</span>
-                    <span class="info-value monospace">{{ (editedTemplate.layout.elements.qr.leftPercent * 100).toFixed(2) }}%</span>
-                  </div>
-                  <div class="info-card">
-                    <span class="info-label">Posição Vertical (Y)</span>
-                    <span class="info-value monospace">{{ (editedTemplate.layout.elements.qr.topPercent * 100).toFixed(2) }}%</span>
-                  </div>
-                  <div class="info-card">
-                    <span class="info-label">Largura</span>
-                    <span class="info-value monospace">{{ (editedTemplate.layout.elements.qr.sizePercent * 100).toFixed(2) }}%</span>
+
+                  <div v-for="(element, key) in editedTemplate.layout.elements" :key="key" class="info-card">
+                    <span class="info-label" style="text-transform: capitalize;">{{ key }}</span>
+                    <div class="element-coords">
+                      <span>X: {{ (element.leftPercent * 100).toFixed(1) }}%</span>
+                      <span>Y: {{ (element.topPercent * 100).toFixed(1) }}%</span>
+                      <span v-if="element.sizePercent">W: {{ (element.sizePercent * 100).toFixed(1) }}%</span>
+                      <span v-if="element.fontSizePercent">F: {{ (element.fontSizePercent * 100).toFixed(1) }}%</span>
+                    </div>
                   </div>
                 </div>
 
                 <div class="info-card">
-                  <p v-if="!editMode">O QR Code será gerado automaticamente no PDF final.</p>
-                  <p v-else>Use o botão "Copiar" para salvar a nova configuração do template.</p>
+                  <p v-if="!editMode" class="info-card-note-text">Os elementos dinâmicos serão gerados automaticamente no PDF final.</p>
+                  <p v-else class="info-card-note-text">Clique em "Sair do Modo de Ajuste" para salvar a nova configuração do template.</p>
                 </div>
               </aside>
             </div>
@@ -262,6 +319,24 @@ const handleExitEditMode = () => {
 </template>
 
 <style scoped>
+/* Estilo para o novo select */
+.form-control-select {
+  width: 100%;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: var(--modal-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+}
 /* --- Variáveis de Estilo --- */
 :host {
   --modal-bg: #ffffff;
@@ -420,7 +495,17 @@ const handleExitEditMode = () => {
   padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--modal-border-color);
 }
+.info-panel .edit-panel-content > .info-card:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
 .info-panel div > .info-card:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.info-panel .edit-panel-content > .info-card:last-of-type {
   border-bottom: none;
   padding-bottom: 0;
 }
@@ -447,13 +532,13 @@ const handleExitEditMode = () => {
   font-weight: 600;
 }
 
-.info-card-note {
+.info-card-note-text {
   background-color: #f9fafb;
   border-radius: 8px;
   padding: 1rem;
   margin-top: auto; /* Empurra para o final */
 }
-.info-card-note p {
+.info-card-note-text {
   margin: 0;
   font-size: 0.8rem;
   color: var(--modal-subtitle-text);
@@ -470,6 +555,14 @@ const handleExitEditMode = () => {
   font-size: 0.85rem;
   color: var(--modal-subtitle-text);
   margin: 0 0 1.5rem 0;
+}
+
+.element-coords {
+  display: flex;
+  gap: 12px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 /* --- Rodapé --- */
@@ -503,10 +596,22 @@ const handleExitEditMode = () => {
 .btn-text:hover:not(:disabled) { background: #f3f4f6; }
 .btn-cancel { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); border: 1px solid var(--btn-secondary-border); }
 .btn-cancel:hover:not(:disabled) { background: var(--btn-secondary-hover-bg); }
-.btn-success { background: var(--btn-primary-bg); color: white; padding: 12px 24px; }
-.btn-success:hover:not(:disabled) { background: var(--btn-primary-hover-bg); }
+.btn-success { 
+  background: var(--btn-primary-bg) !important; /* Garante o fundo verde */
+  color: #fff !important; /* Força a cor do texto e do SVG para branco */
+  padding: 12px 24px;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+  transition: all 0.3s ease;
+}
+.btn-success:hover:not(:disabled) { 
+  background: var(--btn-primary-hover-bg) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+}
 .btn:disabled { cursor: not-allowed; opacity: 0.7; }
-.btn-success:disabled { background-color: var(--btn-primary-disabled-bg); }
+.btn-success:disabled { 
+  background-color: var(--btn-primary-disabled-bg) !important;
+}
 
 /* --- Spinner --- */
 .spinner { animation: rotate 2s linear infinite; width: 18px; height: 18px; }
