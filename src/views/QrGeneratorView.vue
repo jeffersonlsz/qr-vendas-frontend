@@ -22,6 +22,7 @@ import BulkGenerationModal from '../components/BulkGenerationModal.vue'
 import AssociarCartaoModal from '../components/AssociarCartaoModal.vue'
 import DropdownMenu from '../components/DropdownMenu.vue'
 import OperadorModal from '../components/OperadorModal.vue'
+import ParceiroEditModal from '../components/ParceiroEditModal.vue'
 import { parceiroService } from '../services/parceiroService'
 import { operadorService } from '../services/operadorService'
 import { templateService } from '../services/templateService';
@@ -57,6 +58,8 @@ const isSavingAssociation = ref(false)
 const modalSolicitacoesOpen = ref(false)
 const modalOperadorOpen = ref(false)
 const isSavingOperador = ref(false)
+const isEditModalOpen = ref(false)
+const partnerToEdit = ref(null)
 const selectedPartner = ref(null)
 const selectedPartnerSolicitacoes = ref([])
 const qrDataUrl = ref('')
@@ -527,6 +530,32 @@ const handleSaveLayout = async ({ templateId, layout }) => {
   }
 };
 
+const openEditModal = (partner) => {
+  partnerToEdit.value = partner;
+  isEditModalOpen.value = true;
+};
+
+
+
+const handleUpdatePartner = async (updatedData) => {
+  if (!updatedData || !updatedData.id) return;
+
+  try {
+    const response = await parceiroService.atualizar(updatedData.id, updatedData);
+    const index = partners.value.findIndex(p => p.id === updatedData.id);
+    if (index !== -1) {
+      partners.value[index] = response;
+    }
+    showAlert('Sucesso', 'Parceiro atualizado com sucesso!', 'success');
+  } catch (error) {
+    console.error("Erro ao atualizar parceiro:", error);
+    showAlert('Erro', 'Ocorreu um erro ao atualizar o parceiro.', 'error');
+  } finally {
+    isEditModalOpen.value = false;
+    partnerToEdit.value = null;
+  }
+};
+
 const closeModal = () => {
   modalQrOpen.value = false
   modalPosterOpen.value = false
@@ -535,11 +564,13 @@ const closeModal = () => {
   modalBulkOpen.value = false
   modalAssociateOpen.value = false
   modalOperadorOpen.value = false
+  isEditModalOpen.value = false
   setTimeout(() => {
     selectedPartner.value = null
     qrDataUrl.value = ''
     qrUrlText.value = ''
     selectedPartnerSolicitacoes.value = []
+    partnerToEdit.value = null
   }, 300)
 }
 </script>
@@ -562,6 +593,11 @@ const closeModal = () => {
           <router-link to="/solicitacoes" class="action-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             Ver solicitações
+          </router-link>
+
+          <router-link to="/parceiros" class="action-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            Ver parceiros
           </router-link>
 
           <DropdownMenu :items="dropdownItems" />
@@ -623,6 +659,7 @@ const closeModal = () => {
           @poster="handleGeneratePoster"
           @view-solicitacoes="handleViewSolicitacoes"
           @associate-card="handleOpenAssociateModal"
+          @edit-partner="openEditModal"
         />
       </div>
     </main>
@@ -821,6 +858,12 @@ const closeModal = () => {
       :is-saving="isSavingOperador"
       @close="closeModal"
       @save="handleSaveOperador"
+    />
+
+    <ParceiroEditModal
+      v-model="isEditModalOpen"
+      :partner="partnerToEdit"
+      @save="handleUpdatePartner"
     />
   </div>
 </template>

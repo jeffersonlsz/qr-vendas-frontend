@@ -22,6 +22,11 @@ const router = createRouter({
             path: '/solicitacoes',
             name: 'dashboard-solicitacoes',
             component: () => import('../views/SolicitacoesDashboard.vue')
+        },
+        {
+            path: '/parceiros',
+            name: 'parceiros',
+            component: () => import('../views/ParceirosView.vue')
         }
     ]
 })

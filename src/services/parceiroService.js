@@ -58,12 +58,27 @@ const associar = (id, dados) => {
   return api.post(`${URI}/${id}/associar`, dados);
 };
 
+const listarTodos = (ativo = true) => {
+    return api.get(`${URI}?ativo=${ativo}&page=1&page_size=100`);
+};
+
+const atualizar = (id, dados) => {
+    return api.patch(`${URI}/${id}`, dados);
+};
+
+const deletar = (id) => {
+    return api.delete(`${URI}/${id}`);
+};
+
 
 export const parceiroService = {
   listar,
+  listarTodos,
   criar,
   buscarResumo,
   buscarSolicitacoes,
   gerarLote,
   associar,
+  atualizar,
+  deletar,
 };

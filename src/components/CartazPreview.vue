@@ -1,4 +1,5 @@
 <script setup>
+import { nextTick, watch } from 'vue';
 import { ref, computed } from 'vue';
 import QRCode from 'qrcode';
 import EditableElement from './EditableElement.vue';
@@ -26,15 +27,38 @@ const emit = defineEmits(['update:template']);
 
 const containerRef = ref(null);
 
+
+
+
+
 const editableElements = computed(() => {
   const elements = props.template.layout?.elements || {};
   console.log("Elementos encontrados:", Object.keys(elements));
   console.log(props.template.layout);
   console.log(JSON.stringify(props.template.layout, null, 2));
+  console.log("");
+  console.log("containerRef:", containerRef.value);
+  
+  console.log("");
+
   return Object.entries(elements).map(([id, config]) => ({
     id,
     ...config
   }));
+
+  
+});
+
+watch(editableElements, async () => {
+  await nextTick();
+
+  const el = containerRef.value;
+
+  console.log("clientWidth :", el.clientWidth);
+  console.log("scrollWidth :", el.scrollWidth);
+
+  console.log("clientHeight:", el.clientHeight);
+  console.log("scrollHeight:", el.scrollHeight);
 });
 
 const handleElementUpdate = (update) => {

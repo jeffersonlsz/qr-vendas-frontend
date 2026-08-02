@@ -40,7 +40,7 @@ onUnmounted(() => {
 
 <template>
   <div class="dropdown-container" ref="dropdownRef">
-    <button class="btn-primary-action" @click="toggleDropdown">
+    <button class="btn-primary-action" @click.stop="toggleDropdown">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
       <span>Novo</span>
       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="chevron" :class="{ 'is-open': isOpen }"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -108,8 +108,9 @@ onUnmounted(() => {
   border-radius: 12px;
   box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
   width: 280px;
-  z-index: 10;
+  z-index: 100;
   overflow: hidden;
+  display: block;
 }
 .theme-dark .dropdown-menu {
   background-color: #1f2937;
